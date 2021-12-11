@@ -50,9 +50,9 @@ public class MyDataLoader {
     public List<Iwebipv4> getDomains() {
         SelectQuery select1 = new SelectQuery(Iwebipv4.class);
         List<Iwebipv4> items = context.performQuery(select1);
-        for (Iwebipv4 hygimport : items) {
+        /*for (Iwebipv4 hygimport : items) {
             System.err.println("DEBUG HYG: " + hygimport);
-        }
+        }*/
         return items;
     }
 

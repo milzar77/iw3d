@@ -18,7 +18,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
 public class WindowJme3DSimpleApplication extends SimpleApplication implements IMyActionExecutor {
@@ -59,7 +58,9 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 
             rootNode.attachChild(nUniverse3d);
 
-            JmeDomainLibrary.getInstance().addUniverseStars(assetManager, nUniverse3d);
+            //JmeDomainLibrary.getInstance().addHorizontalMatrix(assetManager, nUniverse3d);
+
+            JmeDomainLibrary.getInstance().addCircularMatrix(assetManager, nUniverse3d);
 
         }
 

@@ -384,7 +384,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
             return;
         }*/
 
-/*
+
         try {
             //TODO: usare vecchio site directory o meglio ancora ricerca google per categoria
             // to resolve a domain name from an ip address: nslookup %ipaddress%
@@ -409,7 +409,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-*/
+
     }
 
 }

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>iw3d</artifactId>
+        <groupId>com.blogspot.fravalle</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>iw3d-data</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.blogspot.fravalle</groupId>
+            <artifactId>iw3d-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.cayenne.plugins</groupId>
+                <artifactId>cayenne-modeler-maven-plugin</artifactId>
+                <version>${cayenne.version}</version>
+                <configuration>
+                    <modelFile>${project.basedir}/src/main/resources/cayenne-iw3d.xml</modelFile>
+                </configuration>
+            </plugin>
+
+            <!--plugin>
+                <groupId>org.apache.cayenne.plugins</groupId>
+                <artifactId>cayenne-maven-plugin</artifactId>
+                <version>${cayenne.version}</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <map>${project.basedir}/src/main/resources/datamap.sm3d.map.xml</map>
+                            <adapter>org.apache.cayenne.dba.derby.DerbyAdapter</adapter>
+                            <dataSource>
+                                <url>jdbc:derby:${derby.base.directory}/${db.schema.name};create=true</url>
+                                <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                            </dataSource>
+                            <dropTables>true</dropTables>
+                        </configuration>
+                        <goals>
+                            <goal>cdbgen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin-->
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.ddl</include>
+                    <include>**/*.csv</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <properties>
+        <cayenne.version>4.1</cayenne.version>
+        <derby.version>10.8.2.2</derby.version>
+        <derby.base.directory>c:/tmp/jme-db</derby.base.directory>
+        <db.schema.name>SM3D</db.schema.name>
+        <db.dml.import.data>${derby.base.directory}/sm3d-data-populate.sql</db.dml.import.data>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+
+</project>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d"/>
+	<property name="defaultSchema" value="iw3d"/>
+	<db-entity name="ITEMPROUTESIPV4" schema="IW3D">
+		<db-attribute name="ITIWID4" type="INTEGER" isMandatory="true" length="10"/>
+		<db-attribute name="ITRDOMAINNAME" type="VARCHAR" length="255"/>
+		<db-attribute name="ITRHOP" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="ITRID4" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
+		<db-attribute name="ITRIPADDRESS" type="VARCHAR" length="60"/>
+		<db-attribute name="ITRIPCLASSA" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="ITRIPCLASSB" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="ITRIPCLASSC" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="ITRIPCLASSD" type="SMALLINT" isMandatory="true" length="5"/>
+	</db-entity>
+	<db-entity name="IWEBIPV4" schema="IW3D">
+		<db-attribute name="IWCATEGORYID" type="INTEGER" length="10"/>
+		<db-attribute name="IWCATEGORYNAME" type="VARCHAR" length="1024"/>
+		<db-attribute name="IWDOMAIN1STLEV" type="VARCHAR" length="60"/>
+		<db-attribute name="IWDOMAIN2NDLEV" type="VARCHAR" length="60"/>
+		<db-attribute name="IWDOMAINNAME" type="VARCHAR" length="255"/>
+		<db-attribute name="IWDOMAINTLD" type="VARCHAR" length="60"/>
+		<db-attribute name="IWHASHTTPS" type="BOOLEAN" length="1"/>
+		<db-attribute name="IWHOOKURL" type="VARCHAR" length="255"/>
+		<db-attribute name="IWID4" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="IWIPADDRESS" type="VARCHAR" length="60"/>
+		<db-attribute name="IWIPCLASSA" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="IWIPCLASSB" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="IWIPCLASSC" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="IWIPCLASSD" type="SMALLINT" isMandatory="true" length="5"/>
+		<db-attribute name="IWTITLE" type="VARCHAR" length="1024"/>
+		<db-attribute name="IWURL" type="VARCHAR" length="4096"/>
+	</db-entity>
+	<db-entity name="IWEBIPV6" schema="IW3D">
+		<db-attribute name="IWID6" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<obj-entity name="Itemproutesipv4" className="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Itemproutesipv4" dbEntityName="ITEMPROUTESIPV4">
+		<obj-attribute name="itiwid4" type="int" db-attribute-path="ITIWID4"/>
+		<obj-attribute name="itrdomainname" type="java.lang.String" db-attribute-path="ITRDOMAINNAME"/>
+		<obj-attribute name="itrhop" type="short" db-attribute-path="ITRHOP"/>
+		<obj-attribute name="itripaddress" type="java.lang.String" db-attribute-path="ITRIPADDRESS"/>
+		<obj-attribute name="itripclassa" type="short" db-attribute-path="ITRIPCLASSA"/>
+		<obj-attribute name="itripclassb" type="short" db-attribute-path="ITRIPCLASSB"/>
+		<obj-attribute name="itripclassc" type="short" db-attribute-path="ITRIPCLASSC"/>
+		<obj-attribute name="itripclassd" type="short" db-attribute-path="ITRIPCLASSD"/>
+	</obj-entity>
+	<obj-entity name="Iwebipv4" className="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv4" dbEntityName="IWEBIPV4">
+		<obj-attribute name="iwcategoryid" type="int" db-attribute-path="IWCATEGORYID"/>
+		<obj-attribute name="iwcategoryname" type="java.lang.String" db-attribute-path="IWCATEGORYNAME"/>
+		<obj-attribute name="iwdomain1stlev" type="java.lang.String" db-attribute-path="IWDOMAIN1STLEV"/>
+		<obj-attribute name="iwdomain2ndlev" type="java.lang.String" db-attribute-path="IWDOMAIN2NDLEV"/>
+		<obj-attribute name="iwdomainname" type="java.lang.String" db-attribute-path="IWDOMAINNAME"/>
+		<obj-attribute name="iwdomaintld" type="java.lang.String" db-attribute-path="IWDOMAINTLD"/>
+		<obj-attribute name="iwhashttps" type="boolean" db-attribute-path="IWHASHTTPS"/>
+		<obj-attribute name="iwhookurl" type="java.lang.String" db-attribute-path="IWHOOKURL"/>
+		<obj-attribute name="iwipaddress" type="java.lang.String" db-attribute-path="IWIPADDRESS"/>
+		<obj-attribute name="iwipclassa" type="short" db-attribute-path="IWIPCLASSA"/>
+		<obj-attribute name="iwipclassb" type="short" db-attribute-path="IWIPCLASSB"/>
+		<obj-attribute name="iwipclassc" type="short" db-attribute-path="IWIPCLASSC"/>
+		<obj-attribute name="iwipclassd" type="short" db-attribute-path="IWIPCLASSD"/>
+		<obj-attribute name="iwtitle" type="java.lang.String" db-attribute-path="IWTITLE"/>
+		<obj-attribute name="iwurl" type="java.lang.String" db-attribute-path="IWURL"/>
+	</obj-entity>
+	<obj-entity name="Iwebipv6" className="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv6" dbEntityName="IWEBIPV6"/>
+	<info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="iWorld 3D"/>
+	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+		<tableTypes>
+			<tableType>TABLE</tableType>
+			<tableType>VIEW</tableType>
+		</tableTypes>
+		<forceDataMapCatalog>false</forceDataMapCatalog>
+		<forceDataMapSchema>false</forceDataMapSchema>
+		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
+		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+		<skipRelationshipsLoading>false</skipRelationshipsLoading>
+		<useJava7Types>false</useJava7Types>
+		<usePrimitives>true</usePrimitives>
+	</dbImport>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>..\java</destDir>
+		<mode>all</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>true</createPKProperties>
+		<client>false</client>
+	</cgen>
+</data-map>

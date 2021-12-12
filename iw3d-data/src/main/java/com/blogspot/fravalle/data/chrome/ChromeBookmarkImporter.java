@@ -3,6 +3,8 @@ package com.blogspot.fravalle.data.chrome;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.AProgressRunner;
 import com.blogspot.fravalle.data.ProgressMessageBean;
+import com.blogspot.fravalle.data.UrlDomain;
+import com.blogspot.fravalle.data.utils.LibSqlUtils;
 
 
 import java.io.*;
@@ -12,9 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-/**
- * This class is used for downloading stars data from HYG database and transform some column's format
- */
+
 public class ChromeBookmarkImporter extends AProgressRunner {
 
     private static final String FILE_SOURCE_INPUT = "/tmp/bookmarks_10_12_21.html";
@@ -27,7 +27,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
     private String fName;
 
     public enum IWEBIPV4 {
-        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwhashttps,
+        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwwebshotid, iwhashttps,
     }
 
     public enum ITEMPROUTESIPV4 {
@@ -85,7 +85,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
                 int limitCounter = 1;
 
-                String dmlImport1 = this.buildSqlInsertFromEnum( IWEBIPV4.class );
+                String dmlImport1 = LibSqlUtils.buildSqlInsertFromEnum( IWEBIPV4.class );
 
 
                 Reader in0 = new FileReader(this.inputSourceFile);
@@ -130,13 +130,14 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                             }
 
                             String[] args = new String[IWEBIPV4.values().length];
-                            args[0] = this.formatForSqlInsert(urlDomain.getId());
-                            args[1] = this.formatForSqlInsert(urlDomain.getIwDomainName());
-                            args[2] = this.formatForSqlInsert(urlDomain.getIwUrl());
-                            args[3] = this.formatForSqlInsert(urlDomain.getIwTitle());
-                            args[4] = this.formatForSqlInsert(urlDomain.getIwCategoryName());
-                            args[5] = this.formatForSqlInsert(categories.get(urlDomain.getIwCategoryName()));
-                            args[6] = "false";
+                            args[0] = LibSqlUtils.formatForSqlInsert(urlDomain.getId());
+                            args[1] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwDomainName());
+                            args[2] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwUrl());
+                            args[3] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwTitle());
+                            args[4] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwCategoryName());
+                            args[5] = LibSqlUtils.formatForSqlInsert(categories.get(urlDomain.getIwCategoryName()));
+                            args[6] = LibSqlUtils.formatForSqlInsert(DataConfiguration.SESSION_ID);
+                            args[7] = "false";
                             fos.write( String.format(dmlImport1+"\n", args).getBytes(Charset.defaultCharset()) );
                             fos.flush();
                             domains.add(urlDomain);
@@ -224,15 +225,15 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
                     System.err.printf("PATHS FOR %1$s : %2$s\n", dom.getIwDomainName(), dom.getRoutes());
 
-                    String dmlImport2 = this.buildSqlInsertFromEnum( ITEMPROUTESIPV4.class );
+                    String dmlImport2 = LibSqlUtils.buildSqlInsertFromEnum( ITEMPROUTESIPV4.class );
 
                     int cnt = 1;
                     for (String ip : dom.getRoutes()) {
                         String[] args = new String[ITEMPROUTESIPV4.values().length];
-                        args[0] = this.formatForSqlInsert(dom.getIwDomainName());
-                        args[1] = this.formatForSqlInsert(ip);
-                        args[2] = this.formatForSqlInsert(cnt);
-                        args[3] = this.formatForSqlInsert(dom.getId());
+                        args[0] = LibSqlUtils.formatForSqlInsert(dom.getIwDomainName());
+                        args[1] = LibSqlUtils.formatForSqlInsert(ip);
+                        args[2] = LibSqlUtils.formatForSqlInsert(cnt);
+                        args[3] = LibSqlUtils.formatForSqlInsert(dom.getId());
                         fos.write( String.format(dmlImport2+"\n", args).getBytes(Charset.defaultCharset()) );
                         fos.flush();
                         cnt++;
@@ -308,30 +309,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
     }
 
-    private String buildSqlInsertFromEnum(Class clz) {
-        //System.err.println( "ENUM NAME: "+ clz.getSimpleName().toLowerCase());
-        Object[] enValues = clz.getEnumConstants();
-        /*for (Object o : enValues) {
-            System.err.println( "ENUM PROP: <"+ o +">" );
-        }*/
-        //Enum.valueOf()
-        StringBuffer sbColumns = new StringBuffer(256);
-        StringBuffer sbValues = new StringBuffer(256);
-        sbColumns.append(String.format("INSERT INTO %1$s.%2$s (", "iw3d", clz.getSimpleName().toLowerCase()));
-        sbValues.append(" VALUES(");
-        int cnt = 0;
-        for (Object o : enValues) {
-            String endToken = (cnt+1) < enValues.length ? ", " : "";
-            sbColumns.append(o.toString() + endToken);
-            sbValues.append("%" + (cnt + 1) + "$s" + endToken);
-            cnt++;
-        }
-        sbColumns.append(")");
-        sbValues.append(");");
-        sbColumns.append(sbValues.toString());
 
-        return sbColumns.toString();
-    }
 
 
     private void writeImportSqlFile(String schemaName, int totalMaxRows, StringBuffer sbContent) throws IOException {
@@ -341,17 +319,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
     }
 
-    private String formatForSqlInsert(Object asType) {
-        if (asType instanceof BigDecimal) {
-            return ((BigDecimal) asType).toPlainString();
-        } else if (asType instanceof Short||asType instanceof Integer||asType instanceof Float||asType instanceof Long||asType instanceof Double) {
-            //with scientific number notation
-            return asType.toString();
-        } else if (asType instanceof String) {
-            return "'"+String.valueOf(asType).replaceAll("'","''")+"'";
-        }
-        return "0";
-    }
+
 
     private static void retrieveNetStats(UrlDomain urlDomain) {
 
@@ -415,114 +383,3 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 }
 
 
-class UrlDomain {
-    //iwdomainname, iwtitle, iwurl, iwhashttps,
-
-    private static Integer univoqueId = 1;
-    private static Integer univoqueCatId = 0;
-
-    private Integer id;
-    private String iwCategoryName;
-    private String iwCategoryId;
-    private String iwDomainName;
-    private String iwTitle;
-    private String iwUrl;
-    private Vector<String> routes = new Vector<String>();
-
-
-    public String getIwCategoryId() {
-        return iwCategoryId;
-    }
-
-    public void setIwCategoryId(String iwCategoryId) {
-        this.iwCategoryId = iwCategoryId;
-    }
-
-    public String getIwCategoryName() {
-        return iwCategoryName;
-    }
-
-    public void setIwCategoryName(String iwCategoryName) {
-        this.iwCategoryName = iwCategoryName;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Vector<String> getRoutes() {
-        return routes;
-    }
-
-    public void addRoute(String r) {
-        routes.add(r);
-    }
-
-    public String getIwDomainName() {
-        return iwDomainName;
-    }
-
-    public void setIwDomainName(String iwDomainName) {
-        this.iwDomainName = iwDomainName;
-    }
-
-    public String getIwTitle() {
-        return iwTitle;
-    }
-
-    public void setIwTitle(String iwTitle) {
-        this.iwTitle = iwTitle;
-    }
-
-    public String getIwUrl() {
-        return iwUrl;
-    }
-
-    public void setIwUrl(String iwUrl) {
-        this.iwUrl = iwUrl;
-    }
-
-    public UrlDomain() {
-        setId(univoqueId++);
-    }
-
-    protected static UrlDomain parseUrlDomainBoomark(String sourceCatName, String bookmarkSource){
-        UrlDomain urlDomain = new UrlDomain();
-
-        String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutter("\">", "<", 0, sourceCatName) : sourceCatName;
-        System.out.println("CATEGORY FOUND=["+rawCatName1+"]");
-        urlDomain.setIwCategoryName(rawCatName1);
-
-        String rawUrl1 = cutter("HREF=\"", " ADD_DATE=", 1, bookmarkSource);
-        String[] urlParts = rawUrl1.split("/");
-        urlDomain.setIwDomainName(urlParts[2]);
-        String urlString = "";
-        int i=0;
-        for (String s : urlParts) {
-            if (i>2) {
-                urlString += "/" + s;
-            }
-            i++;
-        }
-        urlDomain.setIwUrl(urlString);
-
-        String rawUrl2 = cutter("\">", "<", 0, bookmarkSource);
-
-        urlDomain.setIwTitle(rawUrl2);
-
-        return urlDomain;
-    }
-
-    public static String cutter(String from, String to, int offset, String bookmarkSource) {
-        int cutFrom = bookmarkSource.indexOf(from);
-        int cutTo = bookmarkSource.lastIndexOf(to);
-
-        String rawUrl = bookmarkSource.substring(cutFrom+from.length(), cutTo-offset);
-        return rawUrl;
-    }
-
-}

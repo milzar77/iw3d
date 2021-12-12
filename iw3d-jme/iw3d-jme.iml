@@ -21,7 +21,32 @@
     <orderEntry type="library" name="Maven: net.java.jinput:jinput:2.0.9" level="project" />
     <orderEntry type="library" name="Maven: net.java.jinput:jinput:natives-all:2.0.9" level="project" />
     <orderEntry type="module" module-name="iw3d-data" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.11.0" level="project" />
     <orderEntry type="module" module-name="iw3d-core" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-niftygui:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: com.github.nifty-gui:nifty:1.4.3" level="project" />
+    <orderEntry type="library" name="Maven: xpp3:xpp3:1.1.4c" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.github.nifty-gui:nifty-default-controls:1.4.3" level="project" />
+    <orderEntry type="library" name="Maven: com.github.nifty-gui:nifty-style-black:1.4.3" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-examples:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-effects:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-jbullet:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: com.github.stephengold:jbullet:1.0.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.stephengold:stack-alloc:1.0.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.stephengold:asm-all:3.1.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant:1.10.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.ant:ant-launcher:1.10.10" level="project" />
+    <orderEntry type="library" name="Maven: javax.vecmath:vecmath:1.5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-jogg:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: com.github.stephengold:j-ogg-all:1.0.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: javax.media:jmf:2.1.1e" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-networking:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-plugins:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-terrain:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-testdata:3.4.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: com.github.nifty-gui:nifty-examples:1.4.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derby:10.8.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.cayenne:cayenne-server:4.1" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />

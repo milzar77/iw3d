@@ -33,6 +33,7 @@
 		<db-attribute name="IWIPCLASSD" type="SMALLINT" isMandatory="true" length="5"/>
 		<db-attribute name="IWTITLE" type="VARCHAR" length="1024"/>
 		<db-attribute name="IWURL" type="VARCHAR" length="4096"/>
+		<db-attribute name="IWWEBSHOTID" type="INTEGER" isMandatory="true" length="10"/>
 	</db-entity>
 	<db-entity name="IWEBIPV6" schema="IW3D">
 		<db-attribute name="IWID6" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
@@ -63,6 +64,7 @@
 		<obj-attribute name="iwipclassd" type="short" db-attribute-path="IWIPCLASSD"/>
 		<obj-attribute name="iwtitle" type="java.lang.String" db-attribute-path="IWTITLE"/>
 		<obj-attribute name="iwurl" type="java.lang.String" db-attribute-path="IWURL"/>
+		<obj-attribute name="iwwebshotid" type="int" db-attribute-path="IWWEBSHOTID"/>
 	</obj-entity>
 	<obj-entity name="Iwebipv6" className="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv6" dbEntityName="IWEBIPV6"/>
 	<info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="iWorld 3D"/>

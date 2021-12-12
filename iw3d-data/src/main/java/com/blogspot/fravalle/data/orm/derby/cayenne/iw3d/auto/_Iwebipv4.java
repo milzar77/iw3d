@@ -36,6 +36,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     public static final Property<Short> IWIPCLASSD = Property.create("iwipclassd", Short.class);
     public static final Property<String> IWTITLE = Property.create("iwtitle", String.class);
     public static final Property<String> IWURL = Property.create("iwurl", String.class);
+    public static final Property<Integer> IWWEBSHOTID = Property.create("iwwebshotid", Integer.class);
 
     protected Integer iwcategoryid;
     protected String iwcategoryname;
@@ -52,6 +53,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     protected short iwipclassd;
     protected String iwtitle;
     protected String iwurl;
+    protected int iwwebshotid;
 
 
     public void setIwcategoryid(int iwcategoryid) {
@@ -210,6 +212,16 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         return this.iwurl;
     }
 
+    public void setIwwebshotid(int iwwebshotid) {
+        beforePropertyWrite("iwwebshotid", this.iwwebshotid, iwwebshotid);
+        this.iwwebshotid = iwwebshotid;
+    }
+
+    public int getIwwebshotid() {
+        beforePropertyRead("iwwebshotid");
+        return this.iwwebshotid;
+    }
+
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {
@@ -247,6 +259,8 @@ public abstract class _Iwebipv4 extends BaseDataObject {
                 return this.iwtitle;
             case "iwurl":
                 return this.iwurl;
+            case "iwwebshotid":
+                return this.iwwebshotid;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -304,6 +318,9 @@ public abstract class _Iwebipv4 extends BaseDataObject {
             case "iwurl":
                 this.iwurl = (String)val;
                 break;
+            case "iwwebshotid":
+                this.iwwebshotid = val == null ? 0 : (int)val;
+                break;
             default:
                 super.writePropertyDirectly(propName, val);
         }
@@ -335,6 +352,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         out.writeShort(this.iwipclassd);
         out.writeObject(this.iwtitle);
         out.writeObject(this.iwurl);
+        out.writeInt(this.iwwebshotid);
     }
 
     @Override
@@ -355,6 +373,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         this.iwipclassd = in.readShort();
         this.iwtitle = (String)in.readObject();
         this.iwurl = (String)in.readObject();
+        this.iwwebshotid = in.readInt();
     }
 
 }

@@ -53,6 +53,20 @@
             <version>3.4.0-stable</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.jmonkeyengine</groupId>
+            <artifactId>jme3-niftygui</artifactId>
+            <version>3.4.0-stable</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jmonkeyengine</groupId>
+            <artifactId>jme3-examples</artifactId>
+            <version>3.4.0-stable</version>
+        </dependency>
+
     </dependencies>
+
 
 </project>

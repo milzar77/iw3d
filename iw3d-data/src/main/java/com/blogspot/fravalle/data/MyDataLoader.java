@@ -1,5 +1,6 @@
 package com.blogspot.fravalle.data;
 
+import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv4;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -47,13 +48,25 @@ public class MyDataLoader {
         return instance;
     }
 
-    public List<Iwebipv4> getDomains() {
+    public List<Iwebipv4> getDomains(boolean isForAllSessions) {
         SelectQuery select1 = new SelectQuery(Iwebipv4.class);
+        if (!isForAllSessions) {
+            select1.andQualifier(Iwebipv4.IWWEBSHOTID.eq(DataConfiguration.SESSION_ID));
+        }
         List<Iwebipv4> items = context.performQuery(select1);
-        /*for (Iwebipv4 hygimport : items) {
-            System.err.println("DEBUG HYG: " + hygimport);
-        }*/
         return items;
     }
+
+    public List<Iwebipv4> getDomainsFromUrl(String sUrl) {
+        List<Iwebipv4> items = ObjectSelect.query(Iwebipv4.class).where(Iwebipv4.IWWEBSHOTID.eq(DataConfiguration.SESSION_ID)).select(context);
+        return items;
+    }
+/*
+    public List getStarsByDistance(BigDecimal starValue, boolean isGreatThanEqual) {
+        List<Hygimport> items = isGreatThanEqual
+                ? ObjectSelect.query(Hygimport.class).where(Hygimport.DIST.gte(starValue)).select(context)
+                : ObjectSelect.query(Hygimport.class).where(Hygimport.DIST.lte(starValue)).select(context);
+        return items;
+    }*/
 
 }

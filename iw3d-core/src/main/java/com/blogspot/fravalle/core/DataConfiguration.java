@@ -1,10 +1,23 @@
 package com.blogspot.fravalle.core;
 
 import java.io.File;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
 public class DataConfiguration {
+
+
+    public static String SIMPLE_STRING = null;
+    private static Random random = new Random(1000);
+    public static Integer SESSION_ID = 1;
+    public static final Integer STARTING_SESSION_ID = SESSION_ID;
+    public static Integer staccaSessione(Integer i) {
+        return SESSION_ID = i;
+    }
+    public static Integer staccaSessione() {
+        return SESSION_ID = random.nextInt();
+    }
 
     private static ResourceBundle rbConfig;
 

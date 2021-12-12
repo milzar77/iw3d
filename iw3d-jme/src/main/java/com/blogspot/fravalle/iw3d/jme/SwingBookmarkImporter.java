@@ -202,7 +202,7 @@ public class SwingBookmarkImporter extends JPanel
     public static void createAndShowGUI() {
 
         //Create and set up the window.
-        JFrame frame = new JFrame("Star Map 3D Resources Loader");
+        JFrame frame = new JFrame("iWorld 3D Resource Loader");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.

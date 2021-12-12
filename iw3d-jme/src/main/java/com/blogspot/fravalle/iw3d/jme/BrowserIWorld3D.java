@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.Callable;
 
-public class SampleData {
+public class BrowserIWorld3D {
 
     public static void main(String[] args) {
 
@@ -67,7 +67,7 @@ public class SampleData {
 
     private static final String appClass = "com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication";
 
-    public SampleData(IMyActionExecutor parJmeInstance) {
+    public BrowserIWorld3D(IMyActionExecutor parJmeInstance) {
 
         /*JFrame jf = new JFrame();
         starmapWindow = new StarmapWindowForm();
@@ -96,7 +96,7 @@ public class SampleData {
     }
 
     private static void createFrame(){
-        jFrame = new JFrame("Star Map 3D X");
+        jFrame = new JFrame("iWorld 3D Frame");
         jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //starmapWindow = new StarmapWindowForm();
@@ -106,6 +106,7 @@ public class SampleData {
             @Override
             public void windowClosed(WindowEvent e) {
                 app.stop();
+                System.exit(0);
             }
         });
 

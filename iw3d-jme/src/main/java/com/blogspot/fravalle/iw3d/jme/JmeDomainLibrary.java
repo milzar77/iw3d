@@ -42,10 +42,24 @@ public class JmeDomainLibrary {
         return instance;
     }
 
+    public void applySurfingCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
+        this.addCircularMatrix(assetManager, nUniverse3d);
+    }
+
+    public void applySurfingHorizontalMatrix(AssetManager assetManager, Node nUniverse3d) {
+        this.addHorizontalMatrix(assetManager, nUniverse3d);
+    }
+
+    public void applySurfingRandomWebMatrix(AssetManager assetManager, Node nUniverse3d) {
+        this.addWebMatrix(assetManager, nUniverse3d);
+    }
+
     public void addSurfingCircularMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
         GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
+        google.crawlUrls(true);
+        google.importData();
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
         //System.out.println("URLs:\n"+list);
         this.addCircularMatrix(assetManager, nUniverse3d);

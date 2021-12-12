@@ -18,17 +18,18 @@ public class UrlDomain {
     private String iwDomainName;
     private String iwTitle;
     private String iwUrl;
-    private Integer iwhttpcode;
+
+    private Integer depthLevel;
+    private Short iwhttpcode;
 
     private Vector<String> routes = new Vector<String>();
 
-    private Integer depthLevel;
 
-    public Integer getIwhttpcode() {
+    public Short getIwhttpcode() {
         return iwhttpcode;
     }
 
-    public void setIwhttpcode(Integer iwhttpcode) {
+    public void setIwhttpcode(Short iwhttpcode) {
         this.iwhttpcode = iwhttpcode;
     }
 
@@ -102,7 +103,7 @@ public class UrlDomain {
 
     public static UrlDomain parseUrlDomainBoomark(String sourceCatName, String bookmarkSource){
         UrlDomain urlDomain = new UrlDomain();
-        urlDomain.setIwhttpcode(200);
+        urlDomain.setIwhttpcode(Integer.valueOf(200).shortValue());
         String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutterLast("\">", "<", 0, sourceCatName) : sourceCatName;
         //System.out.println("CATEGORY FOUND=["+rawCatName1+"]");
         urlDomain.setIwCategoryName(rawCatName1);
@@ -140,7 +141,7 @@ public class UrlDomain {
     public static UrlDomain parseUrlDomainUrl(String sourceCatName, String urlSource, Integer currentDepthLevel){
         UrlDomain urlDomain = new UrlDomain();
 
-        urlDomain.setIwhttpcode(200);
+        urlDomain.setIwhttpcode(Integer.valueOf(200).shortValue());
         urlDomain.setDepthLevel(currentDepthLevel);
 
         String rawUrl1 = cutter("href=\"", "\"", 0, urlSource);

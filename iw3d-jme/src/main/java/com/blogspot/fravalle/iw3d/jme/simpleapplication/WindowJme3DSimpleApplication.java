@@ -20,11 +20,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.builder.LayerBuilder;
-import de.lessvoid.nifty.builder.PanelBuilder;
-import de.lessvoid.nifty.builder.ScreenBuilder;
-import de.lessvoid.nifty.controls.button.builder.ButtonBuilder;
-import de.lessvoid.nifty.screen.DefaultScreenController;
 
 import java.util.concurrent.Callable;
 
@@ -38,16 +33,23 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 
 
 
-    Node nUniverse3d = new Node("Universe");
+    private Node nUniverse3d = new Node("Universe");
 
-    private Nifty nifty;
+    public Nifty nifty;
+
+    //private BrowserScreenController browserScreen;
+
+    public BrowserScreenController niftyScreenBrowser;
+
+    public OptionsScreenController niftyScreenOptions;
+
 
         public static void main(String[] args) {
 
             WindowJme3DSimpleApplication app = new WindowJme3DSimpleApplication();
 
             AppSettings settings = new AppSettings(true);
-            settings.setTitle("Star Map 3D");
+            settings.setTitle("iWorld 3D");
             app.setSettings(settings);
 
             app.start();
@@ -83,10 +85,12 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 
             /*nifty.loadStyleFile("nifty-default-styles.xml");
             nifty.loadControlFile("nifty-default-controls.xml");*/
-
-            StartScreenController startScreen = new StartScreenController(this);
-            nifty.fromXml("res/gui/MainMenu.xml", "start", startScreen);
-
+/*
+            //StartScreenController startScreen = new StartScreenController(this);
+            browserScreen = new BrowserScreenController(this);
+            //nifty.fromXml("res/gui/OptionsMenu.xml", "start", startScreen);
+            nifty.fromXml("res/gui/OptionsMenu.xml", "browser", browserScreen);
+*/
 /*
             // <screen>
             nifty.addScreen("Screen_ID", new ScreenBuilder("Hello Nifty Screen"){{
@@ -121,6 +125,11 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 */
             // attach the nifty display to the gui view port as a processor
             guiViewPort.addProcessor(niftyDisplay);
+
+            niftyScreenBrowser = new BrowserScreenController(this);
+            niftyScreenOptions = new OptionsScreenController(this);
+
+            stateManager.attach(niftyScreenBrowser);
 
         }
 
@@ -161,7 +170,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
                     float dist = results.getCollision(i).getDistance();
                     Vector3f pt = results.getCollision(i).getContactPoint();
                     String target = results.getCollision(i).getGeometry().getName();
-                    System.out.println("Selection #" + i + ": " + target + " at " + pt + ", " + dist + " WU away.");
+                    //System.out.println("Selection #" + i + ": " + target + " at " + pt + ", " + dist + " WU away.");
                 }
                 // Use the results -- we rotate the selected geometry.
                 if (results.size() > 0) {
@@ -186,6 +195,9 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
                                 SimpleApplication simpleApp = (SimpleApplication) WindowJme3DSimpleApplication.this;
                                 //TODO: simpleApp.getFlyByCamera().setDragToRotate(false);
                                 //gui.fireMyAction( target.getName(), target.getUserData("starId"));
+                                String url = target.getUserData("domainHostName").toString() + target.getUserData("domainHostPath").toString();
+                                System.out.printf("URL PROPOSED: %1$s", url);
+                                WindowJme3DSimpleApplication.this.proposeUrl(url);
                             }
                             return null;
                         }
@@ -226,7 +238,6 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             }*/
         }
     };
-
 
     private AnalogListener analogListener = new AnalogListener() {
         public void onAnalog(String name, float intensity, float tpf) {
@@ -284,7 +295,8 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
             JmeDomainLibrary.getInstance().addBookmarkImportCircularMatrix(assetManager, nUniverse3d);
         } else {
-            JmeDomainLibrary.getInstance().addSurfingCircularMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
+            //JmeDomainLibrary.getInstance().addSurfingCircularMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
+            JmeDomainLibrary.getInstance().applySurfingCircularMatrix(assetManager, nUniverse3d);
         }
     }
 
@@ -294,7 +306,8 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
             JmeDomainLibrary.getInstance().addBookmarkImportHorizontalMatrix(assetManager, nUniverse3d);
         } else {
-            JmeDomainLibrary.getInstance().addSurfingHorizontalMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
+            //JmeDomainLibrary.getInstance().addSurfingHorizontalMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
+            JmeDomainLibrary.getInstance().applySurfingHorizontalMatrix(assetManager, nUniverse3d);
         }
     }
 
@@ -310,7 +323,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
             JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
         } else {
-            JmeDomainLibrary.getInstance().addSurfingWebMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
+            JmeDomainLibrary.getInstance().applySurfingRandomWebMatrix(assetManager, nUniverse3d);
         }
     }
 
@@ -329,4 +342,10 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     public void starNeighboursSelection(List<Hygimport> starNeighbours) {
         //TODO: JmeStarLibrary.getInstance().starSelection(assetManager, nUniverse3d, starNeighbours);
     }*/
+
+    private void proposeUrl(String url) {
+
+        this.niftyScreenBrowser.proposeUrl(url);
+
+    }
 }

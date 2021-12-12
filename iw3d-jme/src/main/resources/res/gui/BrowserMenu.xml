@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.lessvoid.com/nifty-gui" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd https://raw.githubusercontent.com/void256/nifty-gui/1.4/nifty-core/src/main/resources/nifty.xsd">
+    <useStyles filename="nifty-default-styles.xml"/>
+    <useControls filename="nifty-default-controls.xml"/>
+
+    <screen id="browser" controller="com.blogspot.fravalle.iw3d.jme.simpleapplication.BrowserScreenController">
+        <layer id="layerBrowser" backgroundColor="#0000" childLayout="horizontal">
+
+            <panel id="panelLocationBar" height="5%" width="100%" align="right" valign="top" backgroundColor="#ffff" childLayout="horizontal" visibleToMouse="true">
+                <control id="surfBookmark" name="button" color="#000" label="BOOKMARKS" width="13%" height="100%">
+                    <interact onClick="surfBookmarks(domain,spiderDepthLevel)"/>
+                </control>
+                <control id="surfHome" name="button" color="#000" label="HOME" width="7%" height="100%">
+                    <interact onClick="surfHome(domain,spiderDepthLevel)"/>
+                </control>
+                <control id="domain" name="textfield" color="#000" text="www.google.com" width="60%" height="100%"/>
+                <control id="spiderDepthLevel" name="textfield" color="#000" text="2" width="4%" height="100%"/>
+                <control id="surfDomain" name="button" color="#000" label="SURF" width="8%" height="100%">
+                    <interact onClick="surf(domain,spiderDepthLevel)"/>
+                </control>
+                <control id="surfOptions" name="button" color="#000" label="OPTIONS" width="8%" height="100%">
+                    <interact onClick="showOptionsScreen()"/>
+                </control>
+            </panel>
+
+        </layer>
+
+    </screen>
+
+    <screen id="endBrowser">
+    </screen>
+</nifty>

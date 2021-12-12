@@ -62,12 +62,18 @@ public class JmeDomainLibrary {
         google.importData();
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
         //System.out.println("URLs:\n"+list);
-        this.addCircularMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addCircularMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
     }
 
     public void addBookmarkImportCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.list = MyDataLoader.getInstance().getDomains(false);
-        this.addCircularMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addCircularMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
     }
 
     private void addCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
@@ -123,12 +129,19 @@ public class JmeDomainLibrary {
         //System.out.println("URLs:\n"+list);
         //TODO: debug
         //if (true) return;
-        this.addWebMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addWebMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
+
     }
 
     public void addBookmarkImportWebMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.list = MyDataLoader.getInstance().getDomains(false);
-        this.addWebMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addWebMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
     }
 
     public void addWebMatrix(AssetManager assetManager, Node nUniverse3d) {
@@ -249,12 +262,18 @@ public class JmeDomainLibrary {
         GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
         //System.out.println("URLs:\n"+list);
-        this.addHorizontalMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addHorizontalMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
     }
 
     public void addBookmarkImportHorizontalMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.list = MyDataLoader.getInstance().getDomains(false);
-        this.addHorizontalMatrix(assetManager, nUniverse3d);
+        if (!this.list.isEmpty())
+            this.addHorizontalMatrix(assetManager, nUniverse3d);
+        else
+            System.err.println("No data loaded");
     }
 
     private void addHorizontalMatrix(AssetManager assetManager, Node nUniverse3d) {

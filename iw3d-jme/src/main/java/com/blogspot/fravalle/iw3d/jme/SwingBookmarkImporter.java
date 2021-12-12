@@ -3,19 +3,28 @@ package com.blogspot.fravalle.iw3d.jme;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.*;
 import com.blogspot.fravalle.data.chrome.ChromeBookmarkImporter;
+import com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication;
+import com.jme3.scene.Spatial;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.concurrent.Callable;
 
 public class SwingBookmarkImporter extends JPanel
         implements ActionListener,
         PropertyChangeListener {
 
     public static volatile boolean isSetupFinished = false;
+
+    private WindowJme3DSimpleApplication appInstance;
+
+    private File selectedFile = new File("/tmp/bookmarks.html");
 
     private volatile String infoMessage = null;
 
@@ -25,9 +34,9 @@ public class SwingBookmarkImporter extends JPanel
     private ImportTask importTask;
 
     private final IProgressRunner[] progressRunners = {
-            new SQLDataSetup()
-            ,
-            new ChromeBookmarkImporter()
+            /*new SQLDataSetup()
+            ,*/
+            new ChromeBookmarkImporter(selectedFile)
             ,
             new SQLDataLoader(DataConfiguration.getDmlData())
             /*,
@@ -45,6 +54,10 @@ public class SwingBookmarkImporter extends JPanel
 
             for (IProgressRunner runner : progressRunners) {
                 System.err.printf("[%1$s] has %2$s total max steps\n", runner.getClass().getSimpleName(), runner.maxSteps());
+
+                if (runner instanceof ChromeBookmarkImporter) {
+                    ChromeBookmarkImporter.setInputBookmarkFile( SwingBookmarkImporter.this.selectedFile.getAbsolutePath() );
+                }
 
                 int progress = 0;
                 //Initialize progress property.
@@ -124,6 +137,17 @@ public class SwingBookmarkImporter extends JPanel
             //System.out.close();
             SwingBookmarkImporter.this.isSetupFinished =true;
 
+            //call 3D window data loader
+            if (appInstance!=null) {
+                //appInstance.applyRandomWebMatrix(false);
+                appInstance.enqueue(new Callable<Spatial>(){
+                    public Spatial call() throws Exception{
+                        appInstance.applyRandomWebMatrix(false);
+                        return null;
+                    }
+                });
+            }
+
             return null;
         }
 
@@ -139,12 +163,14 @@ public class SwingBookmarkImporter extends JPanel
         }
     }
 
-    public SwingBookmarkImporter() {
+    public SwingBookmarkImporter(WindowJme3DSimpleApplication instance) {
         super(new BorderLayout());
 
+        this.appInstance = instance;
+
         //Create the demo's UI.
-        startButton = new JButton("Start");
-        startButton.setActionCommand("start");
+        startButton = new JButton("Import Chrome Bookmarks from a file");
+        startButton.setActionCommand("importBookmarks");
         startButton.addActionListener(this);
 
         progressBar = new JProgressBar(0, 100);
@@ -170,7 +196,37 @@ public class SwingBookmarkImporter extends JPanel
      * Invoked when the user presses the start button.
      */
     public void actionPerformed(ActionEvent evt) {
-        startButton.setEnabled(false);
+
+        //load a file
+        JFileChooser jFileChooser = new JFileChooser();
+        //System.out.println("BROWSING: " + System.getProperty("user.home"));
+        jFileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        jFileChooser.addChoosableFileFilter(new FileFilter(){
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory())
+                    return true;
+                else
+                    return f.getName().contains("bookmark") && f.getName().contains("html");
+            }
+            @Override
+            public String getDescription() {
+                return "Chrome Exported Bookmarks file (name must be in the form bookmark*.html)";
+            }
+        });
+        jFileChooser.setAcceptAllFileFilterUsed(true);
+        int result = jFileChooser.showOpenDialog(new JFrame("Choose an exported Chrome bookmark file"));
+        if (result == JFileChooser.APPROVE_OPTION) {
+            this.selectedFile = jFileChooser.getSelectedFile();
+            //System.out.println("Selected file: " + this.selectedFile.getAbsolutePath());
+            if (!this.selectedFile.getName().contains("bookmark") && !this.selectedFile.getName().contains("html"))
+                return;
+        } else {
+            //System.err.println("Invalid selection!");
+            return;
+        }
+
+        //startButton.setEnabled(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         //Instances of javax.swing.SwingWorker are not reusuable, so
         //we create new instances as needed.
@@ -206,7 +262,7 @@ public class SwingBookmarkImporter extends JPanel
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        JComponent newContentPane = new SwingBookmarkImporter();
+        JComponent newContentPane = new SwingBookmarkImporter(null);
         newContentPane.setOpaque(true); //content panes must be opaque
         frame.setContentPane(newContentPane);
         frame.setPreferredSize(new Dimension(1024, 250));

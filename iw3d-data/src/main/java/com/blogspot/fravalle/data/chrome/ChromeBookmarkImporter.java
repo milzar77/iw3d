@@ -24,6 +24,10 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
     private static String inputSourceFile = null;
 
+    public static void setInputBookmarkFile(String par) {
+        inputSourceFile = par;
+    }
+
     private String fName;
 
     public enum IWEBIPV4 {
@@ -282,10 +286,15 @@ public class ChromeBookmarkImporter extends AProgressRunner {
         return s.trim();
     }
 
-    public ChromeBookmarkImporter() {
+    public ChromeBookmarkImporter(File importFile) {
         super.steps = 1;
-        this.inputSourceFile = FILE_SOURCE_INPUT;
-
+        if (importFile==null) {
+            System.out.println("Using default Chrome bookmark path for file import");
+            this.inputSourceFile = FILE_SOURCE_INPUT;
+        }else {
+            System.out.println("Using SELECTED Chrome bookmark path for file import");
+            this.inputSourceFile = importFile.getAbsolutePath();
+        }
         ProgressMessageBean pmbStep1 = null;
         sleepTime = Long.valueOf(SKIP_THREAD_SLEEP);//TODO: move to ProgressMessageBean constructor
         operationsInProgress.add(pmbStep1 = new ProgressMessageBean(() -> {

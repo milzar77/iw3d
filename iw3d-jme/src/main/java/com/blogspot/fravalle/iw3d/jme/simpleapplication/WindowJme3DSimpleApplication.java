@@ -44,17 +44,17 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     public OptionsScreenController niftyScreenOptions;
 
 
-        public static void main(String[] args) {
+    public static void main(String[] args) {
 
-            WindowJme3DSimpleApplication app = new WindowJme3DSimpleApplication();
+        WindowJme3DSimpleApplication app = new WindowJme3DSimpleApplication();
 
-            AppSettings settings = new AppSettings(true);
-            settings.setTitle("iWorld 3D");
-            app.setSettings(settings);
+        AppSettings settings = new AppSettings(true);
+        settings.setTitle("iWorld 3D");
+        app.setSettings(settings);
 
-            app.start();
+        app.start();
 
-        }
+    }
 
         @Override
         public void simpleInitApp() {
@@ -73,7 +73,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             rootNode.attachChild(nUniverse3d);
 
             //JmeDomainLibrary.getInstance().addHorizontalMatrix(assetManager, nUniverse3d);
-            JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
+            //JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
             //JmeDomainLibrary.getInstance().addCircularMatrix(assetManager, nUniverse3d);
 
             NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
@@ -82,6 +82,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
                     audioRenderer,
                     guiViewPort);
             nifty = niftyDisplay.getNifty();
+            //nifty.enableAutoScaling(800,600);
 
             /*nifty.loadStyleFile("nifty-default-styles.xml");
             nifty.loadControlFile("nifty-default-controls.xml");*/
@@ -125,6 +126,8 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 */
             // attach the nifty display to the gui view port as a processor
             guiViewPort.addProcessor(niftyDisplay);
+
+            //TODO: nifty.enableAutoScaling(width, height);
 
             niftyScreenBrowser = new BrowserScreenController(this);
             niftyScreenOptions = new OptionsScreenController(this);

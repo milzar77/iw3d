@@ -1,6 +1,7 @@
 package com.blogspot.fravalle.iw3d.jme;
 
 import com.blogspot.fravalle.data.IMyActionExecutor;
+import com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication;
 import com.jme3.app.LegacyApplication;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
@@ -16,21 +17,6 @@ public class BrowserIWorld3D {
 
     public static void main(String[] args) {
 
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                SwingBookmarkImporter.createAndShowGUI();
-            }
-        });
-
-        while (!SwingBookmarkImporter.isSetupFinished) {
-            try {
-                //System.err.println("Waiting progress...");
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {
-                return;
-            }
-        }
-
         createCanvas(appClass);
 
         try {
@@ -41,11 +27,32 @@ public class BrowserIWorld3D {
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
+
+
+                SwingDatabaseSetup dbSetup = new SwingDatabaseSetup();
+                dbSetup.doDbSetup();
+
+                while (!SwingDatabaseSetup.isSetupFinished) {
+                    try {
+                        //System.err.println("Waiting progress...");
+                        Thread.sleep(1);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+                }
+
                 JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
                 createFrame();
 
+
+
+                SwingBookmarkImporter instanceProgress = new SwingBookmarkImporter((WindowJme3DSimpleApplication) app);
+
                 currentPanel.add(canvas3d, BorderLayout.CENTER);
+                currentPanel.add(instanceProgress, BorderLayout.SOUTH);
+
+
                 jFrame.pack();
                 startApp();
                 jFrame.setLocationRelativeTo(null);
@@ -95,8 +102,22 @@ public class BrowserIWorld3D {
         currentPanel = canvasPanel1;
     }
 
+    private static void createInterface(){
+
+        canvasPanel1 = new JPanel();
+        canvasPanel1.setLayout(new BorderLayout());
+
+        canvasPanel2 = new JPanel();
+        canvasPanel2.setLayout(new BorderLayout());
+        //tabbedPane.addTab("jME3 Canvas 2", canvasPanel2);
+
+        jFrame.getContentPane().add(canvasPanel1);
+
+        currentPanel = canvasPanel1;
+    }
+
     private static void createFrame(){
-        jFrame = new JFrame("iWorld 3D Frame");
+        jFrame = new JFrame("iWorld 3D Surfer");
         jFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //starmapWindow = new StarmapWindowForm();
@@ -110,7 +131,7 @@ public class BrowserIWorld3D {
             }
         });
 
-        createTabs();
+        createInterface();
         //createMenu();
     }
 
@@ -131,8 +152,8 @@ public class BrowserIWorld3D {
 
     public static void createCanvas(String appClass){
         AppSettings settings = new AppSettings(true);
-        settings.setWidth(640);
-        settings.setHeight(480);
+        settings.setWidth(800);
+        settings.setHeight(600);
 
         try{
             Class clazz = Class.forName(appClass);

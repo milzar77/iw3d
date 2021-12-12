@@ -59,6 +59,7 @@ public class MyDataLoader {
 
     public List<Iwebipv4> getDomainsFromUrl(String sUrl) {
         List<Iwebipv4> items = ObjectSelect.query(Iwebipv4.class).where(Iwebipv4.IWWEBSHOTID.eq(DataConfiguration.SESSION_ID)).select(context);
+        System.out.printf("GETTING DATA [Total: %1$s] WITH SESSION ID#%2$s\n", items.size(), DataConfiguration.SESSION_ID);
         return items;
     }
 /*

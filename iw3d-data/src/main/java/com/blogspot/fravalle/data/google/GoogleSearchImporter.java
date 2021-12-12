@@ -11,10 +11,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
@@ -23,8 +20,14 @@ public class GoogleSearchImporter {
 
     private static final String FILE_SOURCE_INPUT = "/tmp/url.html";
 
+    public static HashMap<String, Integer> categories = new LinkedHashMap<String, Integer>();
+
+    private String theUrl;
+    private Boolean appendSqlOutput = Boolean.FALSE;
+
+
     public enum IWEBIPV4 {
-        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwwebshotid, iwhashttps,
+        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwwebshotid, iwwebdepthlevel, iwhttpcode, iwhashttps,
     }
 
     public enum ITEMPROUTESIPV4 {
@@ -32,17 +35,32 @@ public class GoogleSearchImporter {
     }
 
     private File fOut;
-    private Vector<UrlDomain> domains = new Vector<UrlDomain>();
+    private Vector<Vector<UrlDomain>> domains = new Vector<Vector<UrlDomain>>();
     private StringBuffer sb;
+    private Integer currentDepthLevel;
 
-    public GoogleSearchImporter() {
+    public GoogleSearchImporter(String theUrl, Boolean appendSqlOutput) {
+        if (this.theUrl==null) {
+            currentDepthLevel = 0;
+            if (domains.isEmpty()) {
+                for (int i = 0; i < DataConfiguration.getSpiderDepthLevel(); i++) {
+                    Vector<UrlDomain> mydoms = new Vector<UrlDomain>();
+                    domains.add(i, mydoms);
+                }
+            }
+         }
+        this.theUrl = theUrl;
+        this.appendSqlOutput = appendSqlOutput;
         fOut = new File(FILE_SOURCE_INPUT);
+        this.doSomeWork();
+    }
+
+    private void doSomeWork() {
         this.downloadUrl();
         try {
             this.beautify();
-            this.parseSourceDownload();
-            this.createSqlDmlImport();
-            this.runImport(DataConfiguration.getDmlData());
+            this.parseSourceDownload(currentDepthLevel);
+            this.createSqlDmlImport(currentDepthLevel);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -50,7 +68,7 @@ public class GoogleSearchImporter {
         }
     }
 
-    private void createSqlDmlImport() {
+    private void createSqlDmlImport(Integer depthLevel) {
         //DataConfiguration.SIMPLE_STRING
         int limitCounter = 0;
 
@@ -59,11 +77,15 @@ public class GoogleSearchImporter {
         FileOutputStream fos = null;
         try {
             if (!DataConfiguration.isDerbyCached()) {
-                fos = new FileOutputStream(DataConfiguration.getDmlData(), false);
+                fos = new FileOutputStream(DataConfiguration.getDmlData(), this.appendSqlOutput);
+                System.out.printf("Dml Sql import data creator is %1$s...",  this.appendSqlOutput ? "APPENDING" : "CREATING FROM SCRATCH");
+                if (domains.get(depthLevel)==null) {
+                    domains.add(depthLevel, new Vector<UrlDomain>());
+                    //domains.get(depthLevel).add(urlDomain);
+                }
+                for (UrlDomain dom : domains.get(depthLevel)) {
 
-                for (UrlDomain dom : domains) {
-
-                            System.out.println("DOMAIN: " + dom.getIwDomainName() + "; PATH: " + dom.getIwUrl());
+                            //System.out.println("DOMAIN: " + dom.getIwDomainName() + "; PATH: " + dom.getIwUrl());
 
                             /*if ((limitCounter++)>DataConfiguration.getMaxImportRows()) {
                                 break;
@@ -73,12 +95,13 @@ public class GoogleSearchImporter {
                             args[0] = LibSqlUtils.formatForSqlInsert(dom.getId());
                             args[1] = LibSqlUtils.formatForSqlInsert(dom.getIwDomainName());
                             args[2] = LibSqlUtils.formatForSqlInsert(dom.getIwUrl());
-                            System.out.println("TITLE="+dom.getIwTitle());
                             args[3] = LibSqlUtils.formatForSqlInsert(dom.getIwTitle());
                             args[4] = LibSqlUtils.formatForSqlInsert(dom.getIwCategoryName());
-                            args[5] = LibSqlUtils.formatForSqlInsert(0);
+                            args[5] = LibSqlUtils.formatForSqlInsert(dom.getIwCategoryId());
                             args[6] = LibSqlUtils.formatForSqlInsert(DataConfiguration.SESSION_ID);
-                            args[7] = "false";
+                            args[7] = LibSqlUtils.formatForSqlInsert(dom.getDepthLevel());
+                            args[8] = LibSqlUtils.formatForSqlInsert(dom.getIwhttpcode());
+                            args[9] = "false";
                             fos.write(String.format(dmlImport1 + "\n", args).getBytes(Charset.defaultCharset()));
 
                 }
@@ -120,33 +143,58 @@ public class GoogleSearchImporter {
     }
 
 
-    private void parseSourceDownload() throws IOException {
+    private void parseSourceDownload(Integer depthLevel) throws IOException {
         String[] splitSource = sb.toString().split("\n");
+        String currentCategoryName = null;
         for (String s : splitSource) {
             //System.out.println("SOURCE="+s);
             if (s.contains("href=\"")) {
-                UrlDomain urlDomain = UrlDomain.parseUrlDomainUrl("Default", s);
-                domains.add(urlDomain);
+
+                UrlDomain urlDomain = UrlDomain.parseUrlDomainUrl("Default", s, depthLevel);
+                if (domains.isEmpty()) {
+                    domains.add(depthLevel, new Vector<UrlDomain>());
+                    domains.get(depthLevel).add(urlDomain);
+                } else {
+                    domains.get(depthLevel).add(urlDomain);
+                }
+                if (currentCategoryName==null) {
+                    currentCategoryName = "FV";
+                    categories.put(currentCategoryName, categories.size()+1 );
+                } else {
+                    currentCategoryName = urlDomain.getIwDomainName();
+                    categories.put(currentCategoryName, categories.size()+1 );
+                }
                 //System.out.println("MYURL="+urlDomain.getIwDomainName()+"||"+urlDomain.getIwUrl());
             }
         }
+
+        for (UrlDomain dom : domains.get(depthLevel)){
+            if (categories.get(dom.getIwDomainName())!=null) {
+                dom.setIwCategoryId( categories.get(dom.getIwDomainName()) );
+            } else {
+                System.out.printf("ORPHAN CATEGORY NODE: %1$s CAT:%2$s\n", dom.getIwDomainName(), dom.getIwCategoryName());
+            }
+
+        }
+
     }
 
     private void downloadUrl() {
         try {
-            URL urlDownload = new URL("https://"+ DataConfiguration.SIMPLE_STRING);
+            URL urlDownload = new URL("https://"+ theUrl);
             FileOutputStream fos = new FileOutputStream(fOut);
             IOUtils.copy(urlDownload, fos);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace(System.err);
+            System.out.println("HTTP CODE 404 ON: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void runImport(String importFile) {
+    private void runImport(String importFile) {
         System.err.println("TEST RUN IMPORT FROM " + importFile);
         try {
             String urlConnection = "jdbc:derby:"+ DataConfiguration.getBaseDerbyDirectory() + DataConfiguration.getDdlSchemaName() +";create=true";
@@ -166,7 +214,7 @@ public class GoogleSearchImporter {
     private Connection con;
     private Statement statement;
 
-    public void closeChannels() {
+    private void closeChannels() {
         System.err.println("CLOSING DATA CHANNELS");
         try {
             if (statement!=null) statement.close();
@@ -176,7 +224,7 @@ public class GoogleSearchImporter {
         }
     }
 
-    public void populateWithDmlData(Statement statement, String inputData) throws IOException, SQLException {
+    private void populateWithDmlData(Statement statement, String inputData) throws IOException, SQLException {
         BufferedReader brInput = new BufferedReader(new FileReader(inputData));
 
         int importCounter = 0;
@@ -195,6 +243,41 @@ public class GoogleSearchImporter {
 
         }
         brInput.close();
+    }
+
+    public void crawlUrls(boolean bAppending) {
+        this.appendSqlOutput = bAppending;
+        System.out.printf("TOTAL CRAWLED DOMAINS: %1$s\n", domains.size());
+        for (UrlDomain dom : domains.get(currentDepthLevel)) {
+/*
+            currentDepthLevel = 0;
+            if (domains.get(currentDepthLevel)==null) {
+                Vector<UrlDomain> mydoms = new Vector<>();
+                domains.add(currentDepthLevel, mydoms);
+            }
+ */
+            this.theUrl = dom.getIwDomainName() + dom.getIwUrl();
+            //System.out.printf("CRAWLING URL WITH LEVEL [%1$s]: %2$s\n", currentDepthLevel, theUrl);
+            //this.doSomeWork();
+
+            this.downloadUrl();
+            try {
+                this.beautify();
+                this.parseSourceDownload(currentDepthLevel+1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                //System.out.println("OUTPUT CRAWLED DOMAINS: "+domains);
+            }
+        }
+
+        this.createSqlDmlImport(currentDepthLevel+1);
+
+        //TODO: this.importData();
+    }
+
+    public void importData() {
+        this.runImport(DataConfiguration.getDmlData());
     }
 
 }

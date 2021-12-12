@@ -23,6 +23,8 @@ CREATE TABLE iw3d.iwebipv4 (
     iwipclassc SMALLINT NOT NULL DEFAULT 0,
     iwipclassd SMALLINT NOT NULL DEFAULT 0,
     iwwebshotid INTEGER NOT NULL DEFAULT 1,
+    iwwebdepthlevel INTEGER NOT NULL DEFAULT 1,
+    iwhttpcode SMALLINT NOT NULL DEFAULT 200,
     iwhashttps BOOLEAN DEFAULT false,
     CONSTRAINT iwebipv4_pk PRIMARY KEY (iwid4)
 );

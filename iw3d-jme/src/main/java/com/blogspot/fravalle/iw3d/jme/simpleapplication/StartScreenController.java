@@ -63,13 +63,15 @@ public class StartScreenController implements ScreenController {
         this.application.applyRandomWebMatrix(false);
     }
 
-    public void surf(String inputId) {
+    public void surf(String inputId, String inputSpideringDepthLevel) {
         //this.application.applyRandomWebMatrix();
-        String s = ((TextField)this.screen.findNiftyControl(inputId, TextField.class)).getRealText() + "/";
+        String s1 = ((TextField)this.screen.findNiftyControl(inputId, TextField.class)).getRealText();
+        String s2 = ((TextField)this.screen.findNiftyControl(inputSpideringDepthLevel, TextField.class)).getRealText();
         //TODO: download source from http and parse for links
-        System.out.printf("Surfing around domain [%1$s]\n",s);
-        DataConfiguration.SIMPLE_STRING = s;
-        this.application.surf(s);
+        System.out.printf("Surfing around domain [%1$s] with spidering level %2$s\n",s1, s2);
+        DataConfiguration.SIMPLE_STRING = s1;
+        DataConfiguration.SPIDER_DEPTH_LEVEL = s2;
+        this.application.surf(s1,s2);
     }
 
     public void surfCircularMatrix() {

@@ -27,7 +27,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
     private String fName;
 
     public enum IWEBIPV4 {
-        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwwebshotid, iwhashttps,
+        iwid4, iwdomainname, iwurl, iwtitle, iwcategoryname, iwcategoryid, iwwebshotid, iwwebdepthlevel, iwhttpcode, iwhashttps,
     }
 
     public enum ITEMPROUTESIPV4 {
@@ -107,7 +107,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                             currentCategoryName = "FV";
                             categories.put(currentCategoryName, categories.size()+1 );
                         } else {
-                            String rawCatName1 = lineImport.indexOf('>')!=-1 ? UrlDomain.cutter("\">", "<", 0, lineImport) : lineImport;
+                            String rawCatName1 = lineImport.indexOf('>')!=-1 ? UrlDomain.cutterLast("\">", "<", 0, lineImport) : lineImport;
                             currentCategoryName = rawCatName1;
                             categories.put(currentCategoryName, categories.size()+1 );
                         }
@@ -137,7 +137,9 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                             args[4] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwCategoryName());
                             args[5] = LibSqlUtils.formatForSqlInsert(categories.get(urlDomain.getIwCategoryName()));
                             args[6] = LibSqlUtils.formatForSqlInsert(DataConfiguration.SESSION_ID);
-                            args[7] = "false";
+                            args[7] = LibSqlUtils.formatForSqlInsert(urlDomain.getDepthLevel());
+                            args[8] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwhttpcode());
+                            args[9] = "false";
                             fos.write( String.format(dmlImport1+"\n", args).getBytes(Charset.defaultCharset()) );
                             fos.flush();
                             domains.add(urlDomain);
@@ -223,7 +225,7 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                         break;
                     }
 
-                    System.err.printf("PATHS FOR %1$s : %2$s\n", dom.getIwDomainName(), dom.getRoutes());
+                    //System.err.printf("PATHS FOR %1$s : %2$s\n", dom.getIwDomainName(), dom.getRoutes());
 
                     String dmlImport2 = LibSqlUtils.buildSqlInsertFromEnum( ITEMPROUTESIPV4.class );
 

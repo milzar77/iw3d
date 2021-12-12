@@ -29,6 +29,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     public static final Property<String> IWDOMAINTLD = Property.create("iwdomaintld", String.class);
     public static final Property<Boolean> IWHASHTTPS = Property.create("iwhashttps", Boolean.class);
     public static final Property<String> IWHOOKURL = Property.create("iwhookurl", String.class);
+    public static final Property<Short> IWHTTPCODE = Property.create("iwhttpcode", Short.class);
     public static final Property<String> IWIPADDRESS = Property.create("iwipaddress", String.class);
     public static final Property<Short> IWIPCLASSA = Property.create("iwipclassa", Short.class);
     public static final Property<Short> IWIPCLASSB = Property.create("iwipclassb", Short.class);
@@ -36,6 +37,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     public static final Property<Short> IWIPCLASSD = Property.create("iwipclassd", Short.class);
     public static final Property<String> IWTITLE = Property.create("iwtitle", String.class);
     public static final Property<String> IWURL = Property.create("iwurl", String.class);
+    public static final Property<Integer> IWWEBDEPTHLEVEL = Property.create("iwwebdepthlevel", Integer.class);
     public static final Property<Integer> IWWEBSHOTID = Property.create("iwwebshotid", Integer.class);
 
     protected Integer iwcategoryid;
@@ -46,6 +48,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     protected String iwdomaintld;
     protected Boolean iwhashttps;
     protected String iwhookurl;
+    protected short iwhttpcode;
     protected String iwipaddress;
     protected short iwipclassa;
     protected short iwipclassb;
@@ -53,6 +56,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
     protected short iwipclassd;
     protected String iwtitle;
     protected String iwurl;
+    protected int iwwebdepthlevel;
     protected int iwwebshotid;
 
 
@@ -142,6 +146,16 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         return this.iwhookurl;
     }
 
+    public void setIwhttpcode(short iwhttpcode) {
+        beforePropertyWrite("iwhttpcode", this.iwhttpcode, iwhttpcode);
+        this.iwhttpcode = iwhttpcode;
+    }
+
+    public short getIwhttpcode() {
+        beforePropertyRead("iwhttpcode");
+        return this.iwhttpcode;
+    }
+
     public void setIwipaddress(String iwipaddress) {
         beforePropertyWrite("iwipaddress", this.iwipaddress, iwipaddress);
         this.iwipaddress = iwipaddress;
@@ -212,6 +226,16 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         return this.iwurl;
     }
 
+    public void setIwwebdepthlevel(int iwwebdepthlevel) {
+        beforePropertyWrite("iwwebdepthlevel", this.iwwebdepthlevel, iwwebdepthlevel);
+        this.iwwebdepthlevel = iwwebdepthlevel;
+    }
+
+    public int getIwwebdepthlevel() {
+        beforePropertyRead("iwwebdepthlevel");
+        return this.iwwebdepthlevel;
+    }
+
     public void setIwwebshotid(int iwwebshotid) {
         beforePropertyWrite("iwwebshotid", this.iwwebshotid, iwwebshotid);
         this.iwwebshotid = iwwebshotid;
@@ -245,6 +269,8 @@ public abstract class _Iwebipv4 extends BaseDataObject {
                 return this.iwhashttps;
             case "iwhookurl":
                 return this.iwhookurl;
+            case "iwhttpcode":
+                return this.iwhttpcode;
             case "iwipaddress":
                 return this.iwipaddress;
             case "iwipclassa":
@@ -259,6 +285,8 @@ public abstract class _Iwebipv4 extends BaseDataObject {
                 return this.iwtitle;
             case "iwurl":
                 return this.iwurl;
+            case "iwwebdepthlevel":
+                return this.iwwebdepthlevel;
             case "iwwebshotid":
                 return this.iwwebshotid;
             default:
@@ -297,6 +325,9 @@ public abstract class _Iwebipv4 extends BaseDataObject {
             case "iwhookurl":
                 this.iwhookurl = (String)val;
                 break;
+            case "iwhttpcode":
+                this.iwhttpcode = val == null ? 0 : (short)val;
+                break;
             case "iwipaddress":
                 this.iwipaddress = (String)val;
                 break;
@@ -317,6 +348,9 @@ public abstract class _Iwebipv4 extends BaseDataObject {
                 break;
             case "iwurl":
                 this.iwurl = (String)val;
+                break;
+            case "iwwebdepthlevel":
+                this.iwwebdepthlevel = val == null ? 0 : (int)val;
                 break;
             case "iwwebshotid":
                 this.iwwebshotid = val == null ? 0 : (int)val;
@@ -345,6 +379,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         out.writeObject(this.iwdomaintld);
         out.writeObject(this.iwhashttps);
         out.writeObject(this.iwhookurl);
+        out.writeShort(this.iwhttpcode);
         out.writeObject(this.iwipaddress);
         out.writeShort(this.iwipclassa);
         out.writeShort(this.iwipclassb);
@@ -352,6 +387,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         out.writeShort(this.iwipclassd);
         out.writeObject(this.iwtitle);
         out.writeObject(this.iwurl);
+        out.writeInt(this.iwwebdepthlevel);
         out.writeInt(this.iwwebshotid);
     }
 
@@ -366,6 +402,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         this.iwdomaintld = (String)in.readObject();
         this.iwhashttps = (Boolean)in.readObject();
         this.iwhookurl = (String)in.readObject();
+        this.iwhttpcode = in.readShort();
         this.iwipaddress = (String)in.readObject();
         this.iwipclassa = in.readShort();
         this.iwipclassb = in.readShort();
@@ -373,6 +410,7 @@ public abstract class _Iwebipv4 extends BaseDataObject {
         this.iwipclassd = in.readShort();
         this.iwtitle = (String)in.readObject();
         this.iwurl = (String)in.readObject();
+        this.iwwebdepthlevel = in.readInt();
         this.iwwebshotid = in.readInt();
     }
 

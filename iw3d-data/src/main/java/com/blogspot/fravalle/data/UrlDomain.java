@@ -2,6 +2,8 @@ package com.blogspot.fravalle.data;
 
 import com.blogspot.fravalle.core.DataConfiguration;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 public class UrlDomain {
@@ -12,18 +14,37 @@ public class UrlDomain {
 
     private Integer id;
     private String iwCategoryName;
-    private String iwCategoryId;
+    private Integer iwCategoryId;
     private String iwDomainName;
     private String iwTitle;
     private String iwUrl;
+    private Integer iwhttpcode;
+
     private Vector<String> routes = new Vector<String>();
 
+    private Integer depthLevel;
 
-    public String getIwCategoryId() {
+    public Integer getIwhttpcode() {
+        return iwhttpcode;
+    }
+
+    public void setIwhttpcode(Integer iwhttpcode) {
+        this.iwhttpcode = iwhttpcode;
+    }
+
+    public Integer getDepthLevel() {
+        return depthLevel;
+    }
+
+    public void setDepthLevel(Integer depthLevel) {
+        this.depthLevel = depthLevel;
+    }
+
+    public Integer getIwCategoryId() {
         return iwCategoryId;
     }
 
-    public void setIwCategoryId(String iwCategoryId) {
+    public void setIwCategoryId(Integer iwCategoryId) {
         this.iwCategoryId = iwCategoryId;
     }
 
@@ -81,14 +102,24 @@ public class UrlDomain {
 
     public static UrlDomain parseUrlDomainBoomark(String sourceCatName, String bookmarkSource){
         UrlDomain urlDomain = new UrlDomain();
-
-        String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutter("\">", "<", 0, sourceCatName) : sourceCatName;
-        System.out.println("CATEGORY FOUND=["+rawCatName1+"]");
+        urlDomain.setIwhttpcode(200);
+        String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutterLast("\">", "<", 0, sourceCatName) : sourceCatName;
+        //System.out.println("CATEGORY FOUND=["+rawCatName1+"]");
         urlDomain.setIwCategoryName(rawCatName1);
 
-        String rawUrl1 = cutter("HREF=\"", " ADD_DATE=", 1, bookmarkSource);
+        String rawUrl1 = cutter("HREF=\"", "\"", 1, bookmarkSource);
         String[] urlParts = rawUrl1.split("/");
-        urlDomain.setIwDomainName(urlParts[2]);
+        //urlDomain.setIwDomainName(urlParts[2]);
+        if (rawUrl1.indexOf("//")!=-1) {
+            urlDomain.setIwDomainName(urlParts[2]);
+        } else {
+            String urlOut = "";
+            for (String s: urlParts) {
+                urlOut+="/"+s;
+            }
+            urlDomain.setIwDomainName(urlOut);
+        }
+
         String urlString = "";
         int i=0;
         for (String s : urlParts) {
@@ -99,18 +130,18 @@ public class UrlDomain {
         }
         urlDomain.setIwUrl(urlString);
 
-        String rawUrl2 = cutter("\">", "<", 0, bookmarkSource);
+        String rawUrl2 = cutterLast("\">", "<", 0, bookmarkSource);
 
         urlDomain.setIwTitle(rawUrl2);
 
         return urlDomain;
     }
 
-    public static UrlDomain parseUrlDomainUrl(String sourceCatName, String urlSource){
+    public static UrlDomain parseUrlDomainUrl(String sourceCatName, String urlSource, Integer currentDepthLevel){
         UrlDomain urlDomain = new UrlDomain();
 
-        String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutter("\">", "<", 0, sourceCatName) : sourceCatName;
-        urlDomain.setIwCategoryName(rawCatName1);
+        urlDomain.setIwhttpcode(200);
+        urlDomain.setDepthLevel(currentDepthLevel);
 
         String rawUrl1 = cutter("href=\"", "\"", 0, urlSource);
         //System.out.println("RAW="+rawUrl1);
@@ -135,12 +166,40 @@ public class UrlDomain {
         //urlDomain.setIwTitle(rawUrl2);
         urlDomain.setIwTitle("Default title");
 
+        //String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutter("\">", "<", 0, sourceCatName) : sourceCatName;
+        urlDomain.setIwCategoryId(univoqueCatId);
+        urlDomain.setIwCategoryName(urlDomain.getIwDomainName());
+
         return urlDomain;
     }
 
     public static String cutter(String from, String to, int offset, String source) {
+        int cutFrom = source.indexOf(from)+from.length();
+        int cutTo = 0;
+        String firstCut = source;
+        if (cutFrom!=-1) {
+            firstCut = source.substring(cutFrom);
+            cutTo = firstCut.indexOf(to);
+        }
+        /*
+        if (cutTo==-1)
+            return firstCut;*/
+        //int cutTo = source.lastIndexOf(to);
+        //System.out.println("CUT_SOURCE:"+source);
+        //System.out.println("CUT_FROM:"+cutFrom);
+        //System.out.println("CUT_TO:"+cutTo);
+        //System.out.println("SOURCE CUTTER:"+source+"\nFROM="+from+"["+cutFrom+"]\nFIRST="+firstCut);
+        String rawUrl = firstCut.substring(0, firstCut.indexOf(to));
+        //System.out.println("\nRAWURL="+rawUrl);
+        return rawUrl;
+    }
+
+    public static String cutterLast(String from, String to, int offset, String source) {
         int cutFrom = source.indexOf(from);
         int cutTo = source.lastIndexOf(to);
+        //System.out.println("SOURCE CUTTER LAST:"+source+"\nFROM="+from+"["+cutFrom+"]");
+
+        //int cutTo = source.lastIndexOf(to);
         //System.out.println("CUT_SOURCE:"+source);
         //System.out.println("CUT_FROM:"+cutFrom);
         //System.out.println("CUT_TO:"+cutTo);

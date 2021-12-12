@@ -320,7 +320,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
         JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
     }
 
-    public void surf(String sUrl) {
+    public void surf(String sUrl, String spiderDepthLevel) {
         nUniverse3d.detachAllChildren();
         JmeDomainLibrary.getInstance().addSurfingWebMatrix(sUrl, assetManager, nUniverse3d);
     }

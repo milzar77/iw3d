@@ -25,6 +25,7 @@
 		<db-attribute name="IWDOMAINTLD" type="VARCHAR" length="60"/>
 		<db-attribute name="IWHASHTTPS" type="BOOLEAN" length="1"/>
 		<db-attribute name="IWHOOKURL" type="VARCHAR" length="255"/>
+		<db-attribute name="IWHTTPCODE" type="SMALLINT" isMandatory="true" length="5"/>
 		<db-attribute name="IWID4" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 		<db-attribute name="IWIPADDRESS" type="VARCHAR" length="60"/>
 		<db-attribute name="IWIPCLASSA" type="SMALLINT" isMandatory="true" length="5"/>
@@ -33,6 +34,7 @@
 		<db-attribute name="IWIPCLASSD" type="SMALLINT" isMandatory="true" length="5"/>
 		<db-attribute name="IWTITLE" type="VARCHAR" length="1024"/>
 		<db-attribute name="IWURL" type="VARCHAR" length="4096"/>
+		<db-attribute name="IWWEBDEPTHLEVEL" type="INTEGER" isMandatory="true" length="10"/>
 		<db-attribute name="IWWEBSHOTID" type="INTEGER" isMandatory="true" length="10"/>
 	</db-entity>
 	<db-entity name="IWEBIPV6" schema="IW3D">
@@ -57,6 +59,7 @@
 		<obj-attribute name="iwdomaintld" type="java.lang.String" db-attribute-path="IWDOMAINTLD"/>
 		<obj-attribute name="iwhashttps" type="boolean" db-attribute-path="IWHASHTTPS"/>
 		<obj-attribute name="iwhookurl" type="java.lang.String" db-attribute-path="IWHOOKURL"/>
+		<obj-attribute name="iwhttpcode" type="short" db-attribute-path="IWHTTPCODE"/>
 		<obj-attribute name="iwipaddress" type="java.lang.String" db-attribute-path="IWIPADDRESS"/>
 		<obj-attribute name="iwipclassa" type="short" db-attribute-path="IWIPCLASSA"/>
 		<obj-attribute name="iwipclassb" type="short" db-attribute-path="IWIPCLASSB"/>
@@ -64,6 +67,7 @@
 		<obj-attribute name="iwipclassd" type="short" db-attribute-path="IWIPCLASSD"/>
 		<obj-attribute name="iwtitle" type="java.lang.String" db-attribute-path="IWTITLE"/>
 		<obj-attribute name="iwurl" type="java.lang.String" db-attribute-path="IWURL"/>
+		<obj-attribute name="iwwebdepthlevel" type="int" db-attribute-path="IWWEBDEPTHLEVEL"/>
 		<obj-attribute name="iwwebshotid" type="int" db-attribute-path="IWWEBSHOTID"/>
 	</obj-entity>
 	<obj-entity name="Iwebipv6" className="com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv6" dbEntityName="IWEBIPV6"/>

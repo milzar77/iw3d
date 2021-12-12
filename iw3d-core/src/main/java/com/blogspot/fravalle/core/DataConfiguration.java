@@ -8,6 +8,7 @@ import java.util.Vector;
 public class DataConfiguration {
 
 
+    public static String SPIDER_DEPTH_LEVEL = "2";//TODO: prevedere stringa composta con eventuali info di spidering
     public static String SIMPLE_STRING = null;
     private static Random random = new Random(1000);
     public static Integer SESSION_ID = 1;
@@ -17,6 +18,10 @@ public class DataConfiguration {
     }
     public static Integer staccaSessione() {
         return SESSION_ID = random.nextInt();
+    }
+    public static Integer getSpiderDepthLevel() {
+        Integer s = Integer.parseInt(SPIDER_DEPTH_LEVEL);
+        return s;
     }
 
     private static ResourceBundle rbConfig;

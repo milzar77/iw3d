@@ -45,9 +45,9 @@ public class JmeDomainLibrary {
     public void addSurfingCircularMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter();
+        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
-        System.out.println("URLs:\n"+list);
+        //System.out.println("URLs:\n"+list);
         this.addCircularMatrix(assetManager, nUniverse3d);
     }
 
@@ -102,9 +102,13 @@ public class JmeDomainLibrary {
     public void addSurfingWebMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter();
+        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
+        google.crawlUrls(true);
+        google.importData();
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
-        System.out.println("URLs:\n"+list);
+        //System.out.println("URLs:\n"+list);
+        //TODO: debug
+        //if (true) return;
         this.addWebMatrix(assetManager, nUniverse3d);
     }
 
@@ -228,9 +232,9 @@ public class JmeDomainLibrary {
     public void addSurfingHorizontalMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter();
+        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
         this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
-        System.out.println("URLs:\n"+list);
+        //System.out.println("URLs:\n"+list);
         this.addHorizontalMatrix(assetManager, nUniverse3d);
     }
 

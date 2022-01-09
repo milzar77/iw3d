@@ -52,6 +52,7 @@ public class DataConfiguration {
     private static final String MAX_ROWS = "import.maxrows";
 
     private static final String KEY_DYNAMODB_LOCAL_SERVER = "dynamodb.local.server";
+    private static final String KEY_DYNAMODB_LOCAL_INTERNAL = "dynamodb.local.internal";
     private static final String KEY_DEF_INPUT_DATA = "def.input.data";
 
     private Vector<File> directoriesToDelete;
@@ -165,6 +166,20 @@ public class DataConfiguration {
             return true;
         }
         return false;
+    }
+
+    public static boolean useDynamoDbInternal() {
+        try {
+            String s = rbDynamoDBConfig.getString(KEY_DYNAMODB_LOCAL_INTERNAL);
+            if (Boolean.TRUE.toString().equals(s) || "".equals(s)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return true;
     }
 
     public static boolean isDynamoDbOnCloud() {

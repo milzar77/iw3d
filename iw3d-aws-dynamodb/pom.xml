@@ -34,7 +34,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
-            <scope>test</scope>
+            <!--scope>test</scope-->
         </dependency>
 
         <dependency>
@@ -49,19 +49,58 @@
             <version>2.17.102</version>
         </dependency>
 
+<!-- start-of: Deps for DynamoDB local instance -->
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>DynamoDBLocal</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>sqlite4java</artifactId>
+            <version>1.0.392</version>
+        </dependency>
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>sqlite4java-win32-x86</artifactId>
+            <version>1.0.392</version>
+            <type>dll</type>
+        </dependency>
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>sqlite4java-win32-x64</artifactId>
+            <version>1.0.392</version>
+            <scope>runtime</scope>
+            <type>dll</type>
+        </dependency>
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>libsqlite4java-osx</artifactId>
+            <version>1.0.392</version>
+            <type>dylib</type>
+        </dependency>
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>libsqlite4java-linux-i386</artifactId>
+            <version>1.0.392</version>
+            <type>so</type>
+        </dependency>
+        <dependency>
+            <groupId>com.almworks.sqlite4java</groupId>
+            <artifactId>libsqlite4java-linux-amd64</artifactId>
+            <version>1.0.392</version>
+            <type>so</type>
+        </dependency>
+
+<!-- end-of: Deps for DynamoDB local instance -->
+
         <dependency>
             <groupId>com.blogspot.fravalle</groupId>
             <artifactId>iw3d-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId>com.blogspot.fravalle</groupId>
-            <artifactId>wipidea-starmap-data</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        -->
 
     </dependencies>
 
@@ -80,5 +119,49 @@
         </plugins>
     </build>
     -->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                            <!-- <goal>copy-dependencies</goal> -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>com.almworks.sqlite4java</groupId>
+                            <artifactId>sqlite4java-win32-x64</artifactId>
+                            <version>1.0.392</version>
+                            <type>dll</type>
+                            <!-- <outputDirectory>${project.build.directory}</outputDirectory> -->
+                            <outputDirectory>${project.basedir}/../native-libs</outputDirectory>
+                            <destFileName>sqlite4java-win32-x64-1.0.392.dll</destFileName>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+    <!--Custom repository:-->
+    <repositories>
+        <repository>
+            <id>dynamodb-local-frankfurt</id>
+            <name>DynamoDB Local Release Repository</name>
+            <url>https://s3.eu-central-1.amazonaws.com/dynamodb-local-frankfurt/release</url>
+        </repository>
+    </repositories>
 
 </project>

@@ -11,3 +11,5 @@ buildNumber.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
 derby.log
+/shared-local-instance.db
+/native-libs/sqlite4java-win32-x64-1.0.392.dll

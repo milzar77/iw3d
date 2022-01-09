@@ -293,6 +293,9 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     }
 
     public void applyCircularMatrix(boolean useSurfing) {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         if (!useSurfing) {
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
@@ -304,6 +307,9 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     }
 
     public void applyQuadMatrix(boolean useSurfing) {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         if (!useSurfing) {
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
@@ -315,12 +321,18 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     }
 
     public void applyWebMatrix() {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
         JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
     }
 
     public void applyRandomWebMatrix(boolean useSurfing) {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         if (!useSurfing) {
             DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
@@ -331,12 +343,18 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     }
 
     public void applyMaximumItems(Integer i) {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
         JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
     }
 
     public void surf(String sUrl, String spiderDepthLevel) {
+
+        WindowJme3DSimpleApplication.creaSessione();
+
         nUniverse3d.detachAllChildren();
         JmeDomainLibrary.getInstance().addSurfingWebMatrix(sUrl, assetManager, nUniverse3d);
     }
@@ -351,4 +369,10 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
         this.niftyScreenBrowser.proposeUrl(url);
 
     }
+
+    public static void creaSessione() {
+        DataConfiguration.staccaSessione();
+    }
+
+
 }

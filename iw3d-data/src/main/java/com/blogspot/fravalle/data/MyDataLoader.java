@@ -1,5 +1,7 @@
 package com.blogspot.fravalle.data;
 
+import com.blogspot.fravalle.aws.dynamodb.Iw3dDynamoDB;
+import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv4;
 import org.apache.cayenne.ObjectContext;
@@ -10,6 +12,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 import javax.swing.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyDataLoader {

@@ -1,0 +1,73 @@
+MyActionsOnSchemaSpecificTable
+
+
+[Policy AWS con wildcard e variabile aws]
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ActionsOnUserSpecificTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeContributorInsights",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:TagResource",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTableReplicaAutoScaling",
+                "dynamodb:GetShardIterator",
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeLimits",
+                "dynamodb:ListStreams",
+                "dynamodb:GetItem",
+                "dynamodb:BatchGetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:ConditionCheckItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-south-1:ACCOUNT_ID:table/${aws:PrincipalTag/schema}_*"
+        }
+    ]
+}
+
+
+
+[Policy AWS con condizione]
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ActionsOnUserSpecificTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeContributorInsights",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:TagResource",
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeTableReplicaAutoScaling",
+                "dynamodb:GetShardIterator",
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:DescribeLimits",
+                "dynamodb:ListStreams",
+                "dynamodb:GetItem",
+                "dynamodb:BatchGetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:ConditionCheckItem"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:PrincipalTag/schema": "sm3d"
+                }
+            }
+        }
+    ]
+}

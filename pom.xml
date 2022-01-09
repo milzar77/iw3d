@@ -12,6 +12,7 @@
         <module>iw3d-core</module>
         <module>iw3d-data</module>
         <module>iw3d-jme</module>
+        <module>iw3d-aws-dynamodb</module>
     </modules>
 
     <properties>

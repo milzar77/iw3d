@@ -1,5 +1,6 @@
 package com.blogspot.fravalle.data.chrome;
 
+import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.AProgressRunner;
 import com.blogspot.fravalle.data.ProgressMessageBean;
@@ -81,15 +82,15 @@ public class ChromeBookmarkImporter extends AProgressRunner {
 
     public Integer step1_importBookmarks() throws IOException {
 
-        FileOutputStream fos = null;
+        //FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(DataConfiguration.getDmlData(), false);
+            //fos = new FileOutputStream(DataConfiguration.getDmlData(), false);
 
             if (!DataConfiguration.isDerbyCached()) {
 
                 int limitCounter = 1;
 
-                String dmlImport1 = LibSqlUtils.buildSqlInsertFromEnum( IWEBIPV4.class );
+                //String dmlImport1 = LibSqlUtils.buildSqlInsertFromEnum( IWEBIPV4.class );
 
 
                 Reader in0 = new FileReader(this.inputSourceFile);
@@ -129,10 +130,10 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                     if (lineImport!=null && !lineImport.contains("<H3") && lineImport.contains("<DT>")) {
                         if (!lineImport.contains("dodiff")) {
                             UrlDomain urlDomain = UrlDomain.parseUrlDomainBoomark(currentCategoryName, lineImport);
-                            if ((limitCounter++)>DataConfiguration.getMaxImportRows()) {
+                            /*if ((limitCounter++)>DataConfiguration.getMaxImportRows()) {
                                 break;
-                            }
-
+                            }*/
+                            /*
                             String[] args = new String[IWEBIPV4.values().length];
                             args[0] = LibSqlUtils.formatForSqlInsert(urlDomain.getId());
                             args[1] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwDomainName());
@@ -144,9 +145,29 @@ public class ChromeBookmarkImporter extends AProgressRunner {
                             args[7] = LibSqlUtils.formatForSqlInsert(urlDomain.getDepthLevel());
                             args[8] = LibSqlUtils.formatForSqlInsert(urlDomain.getIwhttpcode());
                             args[9] = "false";
-                            fos.write( String.format(dmlImport1+"\n", args).getBytes(Charset.defaultCharset()) );
-                            fos.flush();
-                            domains.add(urlDomain);
+                            //fos.write( String.format(dmlImport1+"\n", args).getBytes(Charset.defaultCharset()) );
+                            //fos.flush();
+                            */
+
+                            if (!"".equals(urlDomain.getIwDomainName())) {
+                                Iw3dInternetNode iNode = new Iw3dInternetNode();
+                                iNode.setSessionId( "client-"+DataConfiguration.SESSION_ID.toString() );
+                                iNode.setIwid(urlDomain.getId().longValue());
+                                iNode.setIwcategoryid( /*urlDomain.getIwCategoryId().longValue()*/
+                                //FIX:
+                                        categories.getOrDefault(urlDomain.getIwCategoryName(), -1).longValue() );
+                                iNode.setIwhttpcode(urlDomain.getIwhttpcode());
+                                iNode.setIwdomainname(urlDomain.getIwDomainName());
+                                iNode.setIwurl(urlDomain.getIwUrl());
+
+                                iNode.setIwtitle(urlDomain.getIwTitle());
+                                iNode.setIwcategoryname(urlDomain.getIwCategoryName());
+
+                                //iNode.update();
+                                iNode.put();
+
+                                domains.add(urlDomain);
+                            }
 
                         }
                     } else if (lineImport!=null && lineImport.contains("<H3")) {
@@ -166,9 +187,9 @@ public class ChromeBookmarkImporter extends AProgressRunner {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } finally {
-            if (fos!=null) {
+            /*if (fos!=null) {
                 fos.close();
-            }
+            }*/
         }
         nextIterationStep = 1;
         return nextIterationStep;
@@ -319,18 +340,6 @@ public class ChromeBookmarkImporter extends AProgressRunner {
         this.setSteps(operationsInProgress.size());
 
     }
-
-
-
-
-    private void writeImportSqlFile(String schemaName, int totalMaxRows, StringBuffer sbContent) throws IOException {
-        //inCsv = new FileReader(fInputFileName);
-        //System.err.println("CONTENT:["+sbContent+"]");
-
-
-    }
-
-
 
     private static void retrieveNetStats(UrlDomain urlDomain) {
 

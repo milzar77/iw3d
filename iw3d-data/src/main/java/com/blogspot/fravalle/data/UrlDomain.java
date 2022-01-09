@@ -129,11 +129,17 @@ public class UrlDomain {
             }
             i++;
         }
-        urlDomain.setIwUrl(urlString);
+        if ("".equals(urlString)) {
+            urlDomain.setIwUrl(urlDomain.getIwDomainName());
+        } else {
+            urlDomain.setIwUrl(urlString);
+        }
 
         String rawUrl2 = cutterLast("\">", "<", 0, bookmarkSource);
 
         urlDomain.setIwTitle(rawUrl2);
+        //FIX: aggiornare correttamente la category id
+        urlDomain.setIwCategoryId(univoqueCatId);
 
         return urlDomain;
     }
@@ -168,6 +174,7 @@ public class UrlDomain {
         urlDomain.setIwTitle("Default title");
 
         //String rawCatName1 = sourceCatName.indexOf('>')!=-1 ? cutter("\">", "<", 0, sourceCatName) : sourceCatName;
+        //FIX: aggiornare correttamente la category id
         urlDomain.setIwCategoryId(univoqueCatId);
         urlDomain.setIwCategoryName(urlDomain.getIwDomainName());
 

@@ -37,8 +37,9 @@ public class SwingBookmarkImporter extends JPanel
             /*new SQLDataSetup()
             ,*/
             new ChromeBookmarkImporter(selectedFile)
-            ,
+            /*,
             new SQLDataLoader(DataConfiguration.getDmlData())
+            */
             /*,
             new SQLDataLoader("/tmp/import-traceroutes.sql")*/
     };

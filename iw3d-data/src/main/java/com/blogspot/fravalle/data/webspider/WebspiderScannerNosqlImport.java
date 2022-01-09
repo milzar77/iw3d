@@ -1,22 +1,25 @@
-package com.blogspot.fravalle.data.google;
+package com.blogspot.fravalle.data.webspider;
 
+import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.blogspot.fravalle.core.DataConfiguration;
-import com.blogspot.fravalle.data.*;
-import com.blogspot.fravalle.data.chrome.ChromeBookmarkImporter;
+import com.blogspot.fravalle.data.UrlDomain;
 import com.blogspot.fravalle.data.utils.LibSqlUtils;
 import org.apache.commons.io.IOUtils;
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedResponse;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
-public class GoogleSearchImporter {
+public class WebspiderScannerNosqlImport {
 
     private static final String FILE_SOURCE_INPUT = "/tmp/url.html";
 
@@ -39,7 +42,7 @@ public class GoogleSearchImporter {
     private StringBuffer sb;
     private Integer currentDepthLevel;
 
-    public GoogleSearchImporter(String theUrl, Boolean appendSqlOutput) {
+    public WebspiderScannerNosqlImport(String theUrl, Boolean appendSqlOutput) {
         if (this.theUrl==null) {
             currentDepthLevel = 0;
             if (domains.isEmpty()) {
@@ -60,7 +63,7 @@ public class GoogleSearchImporter {
         try {
             this.beautify();
             this.parseSourceDownload(currentDepthLevel);
-            this.createSqlDmlImport(currentDepthLevel);
+            this.importDomainUrl(currentDepthLevel);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -68,29 +71,64 @@ public class GoogleSearchImporter {
         }
     }
 
-    private void createSqlDmlImport(Integer depthLevel) {
+    private void importDomainUrl(Integer depthLevel) {
         //DataConfiguration.SIMPLE_STRING
         int limitCounter = 0;
 
         String dmlImport1 = LibSqlUtils.buildSqlInsertFromEnum( IWEBIPV4.class );
 
-        FileOutputStream fos = null;
+//        FileOutputStream fos = null;
         try {
-            if (!DataConfiguration.isDerbyCached()) {
-                fos = new FileOutputStream(DataConfiguration.getDmlData(), this.appendSqlOutput);
-                System.out.printf("Dml Sql import data creator is %1$s...",  this.appendSqlOutput ? "APPENDING" : "CREATING FROM SCRATCH");
+
+//                fos = new FileOutputStream(DataConfiguration.getDmlData(), this.appendSqlOutput);
+                System.out.printf("Import data into DynamoDB...");
                 if (domains.get(depthLevel)==null) {
                     domains.add(depthLevel, new Vector<UrlDomain>());
                     //domains.get(depthLevel).add(urlDomain);
                 }
-                for (UrlDomain dom : domains.get(depthLevel)) {
+                for (UrlDomain urlDomain : domains.get(depthLevel)) {
 
                             //System.out.println("DOMAIN: " + dom.getIwDomainName() + "; PATH: " + dom.getIwUrl());
 
                             /*if ((limitCounter++)>DataConfiguration.getMaxImportRows()) {
                                 break;
                             }*/
+                    /*
+                    Iw3dInternetNode iNode = new Iw3dInternetNode();
+                    iNode.setIwid( dom.getId().longValue() );
+                    iNode.setIwcategoryid( dom.getIwCategoryId().longValue() );
+                    iNode.setIwhttpcode( dom.getIwhttpcode() );
+                    iNode.setIwdomainname( dom.getIwDomainName() );
+                    iNode.setIwurl( dom.getIwUrl() );
+                    iNode.update();
+                    //iNode.put();
+                    */
 
+                    if (!"".equals(urlDomain.getIwDomainName())) {
+                        Iw3dInternetNode iNode = new Iw3dInternetNode();
+                        iNode.setSessionId( "client-"+DataConfiguration.SESSION_ID.toString() );
+                        iNode.setIwid(urlDomain.getId().longValue());
+                        iNode.setIwcategoryid( /*urlDomain.getIwCategoryId().longValue()*/
+                                //FIX:
+                                categories.getOrDefault(urlDomain.getIwCategoryName(), -1).longValue() );
+                        iNode.setIwhttpcode(urlDomain.getIwhttpcode());
+                        iNode.setIwdomainname(urlDomain.getIwDomainName());
+                        iNode.setIwurl(urlDomain.getIwUrl());
+
+                        iNode.setIwtitle(urlDomain.getIwTitle());
+                        iNode.setIwcategoryname(urlDomain.getIwCategoryName());
+
+                        //iNode.update();
+                        iNode.put();
+
+                        //domains.add(urlDomain);
+
+                    }
+
+                    //PutItemEnhancedResponse<Iw3dInternetNode> p = iNode.putWithResponse();
+                    //System.out.println("PUT: " + p.attributes().getIwurl());
+
+/*
                             String[] args = new String[IWEBIPV4.values().length];
                             args[0] = LibSqlUtils.formatForSqlInsert(dom.getId());
                             args[1] = LibSqlUtils.formatForSqlInsert(dom.getIwDomainName());
@@ -103,20 +141,20 @@ public class GoogleSearchImporter {
                             args[8] = LibSqlUtils.formatForSqlInsert(dom.getIwhttpcode());
                             args[9] = "false";
                             fos.write(String.format(dmlImport1 + "\n", args).getBytes(Charset.defaultCharset()));
-
+*/
                 }
-                fos.flush();
-            }
+//                fos.flush();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (fos!=null) {
+            /*if (fos!=null) {
                 try {
                     fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         }
     }
 
@@ -271,13 +309,8 @@ public class GoogleSearchImporter {
             }
         }
 
-        this.createSqlDmlImport(currentDepthLevel+1);
+        this.importDomainUrl(currentDepthLevel+1);
 
-        //TODO: this.importData();
-    }
-
-    public void importData() {
-        this.runImport(DataConfiguration.getDmlData());
     }
 
 }

@@ -1,9 +1,9 @@
 package com.blogspot.fravalle.iw3d.jme;
 
+import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.MyDataLoader;
-import com.blogspot.fravalle.data.google.GoogleSearchImporter;
-import com.blogspot.fravalle.data.orm.derby.cayenne.iw3d.Iwebipv4;
+import com.blogspot.fravalle.data.webspider.WebspiderScannerNosqlImport;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -17,10 +17,7 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 
 import org.apache.cayenne.Cayenne;
-import org.lwjgl.Sys;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 
 public class JmeDomainLibrary {
@@ -29,10 +26,11 @@ public class JmeDomainLibrary {
 
     private Random rand = new Random(1000);
 
-    private List<Iwebipv4> list;
+    private List<Iw3dInternetNode> list;
+
 
     private JmeDomainLibrary() {
-
+        this.list = new ArrayList<Iw3dInternetNode>();
     }
 
     public static JmeDomainLibrary getInstance() {
@@ -57,11 +55,17 @@ public class JmeDomainLibrary {
     public void addSurfingCircularMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
-        google.crawlUrls(true);
-        google.importData();
-        this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
-        //System.out.println("URLs:\n"+list);
+
+        if (DataConfiguration.useDynamoDb()) {
+            System.out.println("URLs:\n"+list);
+        }/* else {
+            WebspiderScannerSqlImport google = new WebspiderScannerSqlImport(sUrl, false);
+            google.crawlUrls(true);
+            google.importData();
+            this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+            //System.out.println("URLs:\n"+list);
+        }*/
+
         if (!this.list.isEmpty())
             this.addCircularMatrix(assetManager, nUniverse3d);
         else
@@ -69,7 +73,8 @@ public class JmeDomainLibrary {
     }
 
     public void addBookmarkImportCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
-        this.list = MyDataLoader.getInstance().getDomains(false);
+        //this.list = MyDataLoader.getInstance().getDomains(false);
+        this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
         if (!this.list.isEmpty())
             this.addCircularMatrix(assetManager, nUniverse3d);
         else
@@ -78,11 +83,11 @@ public class JmeDomainLibrary {
 
     private void addCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
 
-        HashMap<String, Vector<Iwebipv4>> hm = new LinkedHashMap<String, Vector<Iwebipv4>>();
+        HashMap<String, Vector<Iw3dInternetNode>> hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
 
-        for (Iwebipv4 dom : list) {
+        for (Iw3dInternetNode dom : list) {
             String keyId = String.valueOf(dom.getIwcategoryid());
-            Vector<Iwebipv4> v = hm.get(keyId);
+            Vector<Iw3dInternetNode> v = hm.get(keyId);
             if (v!=null) {
                 v.add(dom);
             } else {
@@ -104,11 +109,11 @@ public class JmeDomainLibrary {
         //360 : hm.size = ANGLE : i ==> ANGLE = (360*i)/hm.size
         for (String categoryKey : hm.keySet()) {
             Node n = new Node("Category_" + categoryKey);
-            Vector<Iwebipv4> v = hm.get(categoryKey);
+            Vector<Iw3dInternetNode> v = hm.get(categoryKey);
             Float moveByIncrement = 0F;
             Float moveIncrement = 2F;
-            for (Iwebipv4 dom : v) {
-                n.attachChild(this.createNodeForCircularMatrix("Origin::"+dom.getObjectId(), moveByIncrement+=moveIncrement, false, assetManager, dom, 0.1f, 3, ColorRGBA.White));
+            for (Iw3dInternetNode dom : v) {
+                n.attachChild(this.createNodeForCircularMatrix("Origin::"+dom.getIwid(), moveByIncrement+=moveIncrement, false, assetManager, dom, 0.1f, 3, ColorRGBA.White));
             }
             Quaternion pitch = new Quaternion();
             pitch.fromAngleAxis((FastMath.PI * (increment+=incrementDeg)) / 180F, new Vector3f(0,0,1));
@@ -122,22 +127,35 @@ public class JmeDomainLibrary {
     public void addSurfingWebMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
-        google.crawlUrls(true);
-        google.importData();
-        this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+        if (DataConfiguration.useDynamoDb()) {
+            WebspiderScannerNosqlImport google = new WebspiderScannerNosqlImport(sUrl, false);
+            google.crawlUrls(true);
+            //this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+            this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
+            if (!this.list.isEmpty())
+                this.addWebMatrix(assetManager, nUniverse3d);
+            else
+                System.err.println("No data loaded");
+        } /*else {
+            WebspiderScannerSqlImport google = new WebspiderScannerSqlImport(sUrl, false);
+            google.crawlUrls(true);
+            google.importData();
+            this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+            if (!this.list.isEmpty())
+                this.addWebMatrix(assetManager, nUniverse3d);
+            else
+                System.err.println("No data loaded");
+        }*/
         //System.out.println("URLs:\n"+list);
         //TODO: debug
         //if (true) return;
-        if (!this.list.isEmpty())
-            this.addWebMatrix(assetManager, nUniverse3d);
-        else
-            System.err.println("No data loaded");
+
 
     }
 
     public void addBookmarkImportWebMatrix(AssetManager assetManager, Node nUniverse3d) {
-        this.list = MyDataLoader.getInstance().getDomains(false);
+        //this.list = MyDataLoader.getInstance().getDomains(false);
+        this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
         if (!this.list.isEmpty())
             this.addWebMatrix(assetManager, nUniverse3d);
         else
@@ -146,11 +164,11 @@ public class JmeDomainLibrary {
 
     public void addWebMatrix(AssetManager assetManager, Node nUniverse3d) {
 
-        HashMap<String, Vector<Iwebipv4>> hm = new LinkedHashMap<String, Vector<Iwebipv4>>();
+        HashMap<String, Vector<Iw3dInternetNode>> hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
 
-        for (Iwebipv4 dom : list) {
+        for (Iw3dInternetNode dom : list) {
             String keyId = String.valueOf(dom.getIwcategoryid());
-            Vector<Iwebipv4> v = hm.get(keyId);
+            Vector<Iw3dInternetNode> v = hm.get(keyId);
             if (v!=null) {
                 v.add(dom);
             } else {
@@ -172,11 +190,11 @@ public class JmeDomainLibrary {
         //360 : hm.size = ANGLE : i ==> ANGLE = (360*i)/hm.size
         for (String categoryKey : hm.keySet()) {
             Node n = new Node("Category_" + categoryKey);
-            Vector<Iwebipv4> v = hm.get(categoryKey);
+            Vector<Iw3dInternetNode> v = hm.get(categoryKey);
             Float moveByIncrement = 0F;
             Float moveIncrement = 2F;
-            for (Iwebipv4 dom : v) {
-                n.attachChild(this.createNodeForWebMatrix("Origin::"+dom.getObjectId(), false, assetManager, dom, 0.1f, 3, ColorRGBA.White));
+            for (Iw3dInternetNode dom : v) {
+                n.attachChild(this.createNodeForWebMatrix("Origin::"+dom.getIwid(), false, assetManager, dom, 0.1f, 3, ColorRGBA.White));
             }
             Quaternion pitch = new Quaternion();
             pitch.fromAngleAxis((FastMath.PI * (increment+=incrementDeg)) / 180F, new Vector3f(0,0,1));
@@ -187,7 +205,7 @@ public class JmeDomainLibrary {
 
     }
 
-    private Node createNodeForWebMatrix(String originId, boolean isDummy, AssetManager assetManager, Iwebipv4 hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
+    private Node createNodeForWebMatrix(String originId, boolean isDummy, AssetManager assetManager, Iw3dInternetNode node, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
         Node domainOrigin = new Node(originId);
         Geometry geomDomain = null;
 
@@ -196,10 +214,10 @@ public class JmeDomainLibrary {
         if (isDummy) {
             Box bStar = new Box(defaultRadius, defaultRadius, defaultRadius);
             // TODO: use primary key id as geometry name
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), bStar);
+            geomDomain = new Geometry("domainId_"+node.getIwid(), bStar);
         } else {
             Sphere sStar = new Sphere(defaultSamples, defaultSamples, defaultRadius);
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), sStar);
+            geomDomain = new Geometry("domainId_"+node.getIwid(), sStar);
         }
 
         if (geomDomain != null) {
@@ -207,7 +225,7 @@ public class JmeDomainLibrary {
             matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
             geomDomain.setMaterial(matStar);
 
-            this.fillWithUserData(geomDomain, hygimport);
+            this.fillWithUserData(geomDomain, node);
 
             domainOrigin.attachChild(geomDomain);
         }
@@ -222,7 +240,7 @@ public class JmeDomainLibrary {
         return domainOrigin;
     }
 
-    private Node createNodeForCircularMatrix(String originId, Float moveByIncrement, boolean isDummy, AssetManager assetManager, Iwebipv4 hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
+    private Node createNodeForCircularMatrix(String originId, Float moveByIncrement, boolean isDummy, AssetManager assetManager, Iw3dInternetNode hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
         Node domainOrigin = new Node(originId);
         Geometry geomDomain = null;
 
@@ -231,10 +249,10 @@ public class JmeDomainLibrary {
         if (isDummy) {
             Box bStar = new Box(defaultRadius, defaultRadius, defaultRadius);
             // TODO: use primary key id as geometry name
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), bStar);
+            geomDomain = new Geometry("domainId_"+hygimport.getIwid(), bStar);
         } else {
             Sphere sStar = new Sphere(defaultSamples, defaultSamples, defaultRadius);
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), sStar);
+            geomDomain = new Geometry("domainId_"+hygimport.getIwid(), sStar);
         }
 
         if (geomDomain != null) {
@@ -242,7 +260,7 @@ public class JmeDomainLibrary {
             matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
             geomDomain.setMaterial(matStar);
 
-            this.fillWithUserData(geomDomain, hygimport);
+            //FIX: this.fillWithUserData(geomDomain, hygimport);
 
             domainOrigin.attachChild(geomDomain);
         }
@@ -259,8 +277,12 @@ public class JmeDomainLibrary {
     public void addSurfingHorizontalMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
         //TODO: get url
         DataConfiguration.staccaSessione();
-        GoogleSearchImporter google = new GoogleSearchImporter(sUrl, false);
-        this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+        if (DataConfiguration.useDynamoDb()) {
+            System.out.println("URLs:\n"+list);
+        }/* else {
+            WebspiderScannerSqlImport google = new WebspiderScannerSqlImport(sUrl, false);
+            this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
+        }*/
         //System.out.println("URLs:\n"+list);
         if (!this.list.isEmpty())
             this.addHorizontalMatrix(assetManager, nUniverse3d);
@@ -269,7 +291,8 @@ public class JmeDomainLibrary {
     }
 
     public void addBookmarkImportHorizontalMatrix(AssetManager assetManager, Node nUniverse3d) {
-        this.list = MyDataLoader.getInstance().getDomains(false);
+        //this.list = MyDataLoader.getInstance().getDomains(false);
+        this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
         if (!this.list.isEmpty())
             this.addHorizontalMatrix(assetManager, nUniverse3d);
         else
@@ -284,12 +307,12 @@ public class JmeDomainLibrary {
 
         list.remove(starOriginIndex);
 
-        for (Iwebipv4 hygimport : list) {
-            nUniverse3d.attachChild(this.createNodeForHorizontalMatrix("Origin::"+hygimport.getObjectId(),false, assetManager, hygimport, 0.1f, 3, ColorRGBA.White));
+        for (Iw3dInternetNode hygimport : list) {
+            nUniverse3d.attachChild(this.createNodeForHorizontalMatrix("Origin::"+hygimport.getIwid(),false, assetManager, hygimport, 0.1f, 3, ColorRGBA.White));
         }
     }
 
-    private Node createNodeForHorizontalMatrix(String originId, boolean isDummy, AssetManager assetManager, Iwebipv4 hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
+    private Node createNodeForHorizontalMatrix(String originId, boolean isDummy, AssetManager assetManager, Iw3dInternetNode hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {
         Node domainOrigin = new Node(originId);
         Geometry geomDomain = null;
 
@@ -298,10 +321,10 @@ public class JmeDomainLibrary {
         if (isDummy) {
             Box bStar = new Box(defaultRadius, defaultRadius, defaultRadius);
             // TODO: use primary key id as geometry name
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), bStar);
+            geomDomain = new Geometry("domainId_"+hygimport.getIwid(), bStar);
         } else {
             Sphere sStar = new Sphere(defaultSamples, defaultSamples, defaultRadius);
-            geomDomain = new Geometry("domainId_"+Cayenne.pkForObject(hygimport).toString(), sStar);
+            geomDomain = new Geometry("domainId_"+hygimport.getIwid(), sStar);
         }
 
         if (geomDomain != null) {
@@ -309,7 +332,7 @@ public class JmeDomainLibrary {
             matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
             geomDomain.setMaterial(matStar);
 
-            this.fillWithUserData(geomDomain, hygimport);
+            //FIX: this.fillWithUserData(geomDomain, hygimport);
 
             domainOrigin.attachChild(geomDomain);
         }
@@ -340,7 +363,7 @@ public class JmeDomainLibrary {
         }
     }
 */
-    public void starSelection(AssetManager assetManager, Node nUniverse3d, List<Iwebipv4> starNeighbours) {
+    public void starSelection(AssetManager assetManager, Node nUniverse3d, List<Iw3dInternetNode> starNeighbours) {
 
         //reset color
         for (Spatial spatial : nUniverse3d.getChildren()) {
@@ -354,10 +377,10 @@ public class JmeDomainLibrary {
             geom.setMaterial(matStar);
         }
         //set selection color
-        for (Iwebipv4 hyg : starNeighbours) {
+        for (Iw3dInternetNode hyg : starNeighbours) {
             for (Spatial spatial : nUniverse3d.getChildren()) {
                 Geometry geom = (Geometry) ((Node) spatial).getChildren().get(0);
-                String idName = "domainId_" + Cayenne.pkForObject(hyg).toString();
+                String idName = "domainId_" + hyg.getIwid();
                 if (!idName.equals("domainId_0")&&geom.getName().equals(idName)) {
                     Material matStar = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
                     matStar.setColor("Color", ColorRGBA.Orange);//TODO: implement color star detector from spectral star data
@@ -367,11 +390,11 @@ public class JmeDomainLibrary {
         }
     }
 
-    private void fillWithUserData(Geometry geomDomain, Iwebipv4 hygimport) {
-        geomDomain.setUserData("domainId", Integer.valueOf(Cayenne.pkForObject(hygimport).toString()));
-        geomDomain.setUserData("domainHostName", hygimport.getIwdomainname());
-        geomDomain.setUserData("domainHostPath", hygimport.getIwurl());
-        geomDomain.setUserData("domainCategory", hygimport.getIwcategoryname());
+    private void fillWithUserData(Geometry geomDomain, Iw3dInternetNode node) {
+        geomDomain.setUserData("domainId", node.getIwid());
+        geomDomain.setUserData("domainHostName", node.getIwdomainname());
+        geomDomain.setUserData("domainHostPath", node.getIwurl());
+        //FIX: geomDomain.setUserData("domainCategory", node.getIwcategoryname());
     }
 
 }

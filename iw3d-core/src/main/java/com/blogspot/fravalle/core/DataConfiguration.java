@@ -7,6 +7,14 @@ import java.util.Vector;
 
 public class DataConfiguration {
 
+    private static final String RES_XML_BUNDLE_DYNDB="setup-dynamodb";
+    private static final String RES_XML_BUNDLE_DB="setup-db";
+    private static final String RES_XML_BUNDLE_APP="setup-app";
+
+    public static ResourceBundle rbDynamoDBConfig;// = XMLResources.getBundle(RES_XML_BUNDLE_DYNDB);
+    public static ResourceBundle rbDatabaseConfig;// = XMLResources.getBundle(RES_XML_BUNDLE_DB);
+    public static ResourceBundle rbApplicationConfig;// = XMLResources.getBundle(RES_XML_BUNDLE_APP);
+
 
     public static String SPIDER_DEPTH_LEVEL = "2";//TODO: prevedere stringa composta con eventuali info di spidering
     public static String SIMPLE_STRING = null;
@@ -17,7 +25,7 @@ public class DataConfiguration {
         return SESSION_ID = i;
     }
     public static Integer staccaSessione() {
-        return SESSION_ID = random.nextInt();
+        return SESSION_ID = Math.abs(random.nextInt());
     }
     public static Integer getSpiderDepthLevel() {
         Integer s = Integer.parseInt(SPIDER_DEPTH_LEVEL);
@@ -43,9 +51,37 @@ public class DataConfiguration {
     private static final String KEY_CAYENNE_PROJECT = "cayenne.project";
     private static final String MAX_ROWS = "import.maxrows";
 
+    private static final String KEY_DYNAMODB_LOCAL_SERVER = "dynamodb.local.server";
+    private static final String KEY_DEF_INPUT_DATA = "def.input.data";
+
     private Vector<File> directoriesToDelete;
 
     static {
+
+        try {
+            rbDynamoDBConfig = XMLResources.getBundle(RES_XML_BUNDLE_DYNDB);
+        } catch (Exception e) {
+            //e.printStackTrace(System.err);
+            System.err.println(e.getMessage());
+        } finally {
+        }
+
+        try {
+            rbDatabaseConfig = XMLResources.getBundle(RES_XML_BUNDLE_DB);
+        } catch (Exception e) {
+            //e.printStackTrace(System.err);
+            System.err.println(e.getMessage());
+        } finally {
+        }
+
+        try {
+            rbApplicationConfig = XMLResources.getBundle(RES_XML_BUNDLE_APP);
+        } catch (Exception e) {
+            //e.printStackTrace(System.err);
+            System.err.println(e.getMessage());
+        } finally {
+        }
+
         Integer i = null;
         try {
             rbConfig = ResourceBundle.getBundle("db-setup");
@@ -53,7 +89,8 @@ public class DataConfiguration {
             String maxRows = rbConfig.getString(MAX_ROWS);
             i = Integer.parseInt(maxRows);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace(System.err);
+            System.err.println(e.getMessage());
         } finally {
             if (i!=null)
                 IMPORT_MAX_ROWS = i;
@@ -122,4 +159,26 @@ public class DataConfiguration {
         return IMPORT_MAX_ROWS;
     }
 
+    public static boolean useDynamoDb() {
+        String s = rbApplicationConfig.getString(KEY_DEF_INPUT_DATA);
+        if ("dynamodb".equals(s)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isDynamoDbOnCloud() {
+        if ( getLocalDynamoDbAddress()!=null && !"".equals( getLocalDynamoDbAddress() ) ) {
+            return false;
+        }
+        return true;
+    }
+
+    public static String getLocalDynamoDbAddress() {
+        String s = rbDynamoDBConfig.getString(KEY_DYNAMODB_LOCAL_SERVER);
+        if ( s!=null && !"".equals(s) && s.startsWith("http") ) {
+            return s;
+        }
+        return "http://localhost:8000";
+    }
 }

@@ -13,10 +13,7 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
@@ -77,7 +74,10 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
 
             flyCam.setEnabled(true);
             flyCam.setDragToRotate(true);
-            flyCam.setZoomSpeed(10f);
+            flyCam.setZoomSpeed(25f);
+
+            cam.setLocation(new Vector3f(-10.6f, -0.25f, 1.15f));
+            cam.setRotation(new Quaternion(-0.025f, 0.78f, 0.03f, 0.61f));
 
             rootNode.attachChild(nUniverse3d);
 

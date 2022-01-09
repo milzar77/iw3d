@@ -10,12 +10,11 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
+import com.jme3.scene.*;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 
+import com.jme3.util.BufferUtils;
 import org.apache.cayenne.Cayenne;
 
 import java.util.*;
@@ -27,6 +26,10 @@ public class JmeDomainLibrary {
     private Random rand = new Random(1000);
 
     private List<Iw3dInternetNode> list;
+
+    private HashMap<String, Vector<Iw3dInternetNode>> hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
+
+    private Vector3f previousNodeVector = new Vector3f(0F, 0F, 0F);
 
 
     private JmeDomainLibrary() {
@@ -83,7 +86,7 @@ public class JmeDomainLibrary {
 
     private void addCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
 
-        HashMap<String, Vector<Iw3dInternetNode>> hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
+        hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
 
         for (Iw3dInternetNode dom : list) {
             String keyId = String.valueOf(dom.getIwcategoryid());
@@ -153,18 +156,51 @@ public class JmeDomainLibrary {
 
     }
 
+    private void traverseSceneForConnection(AssetManager assetManager, Node nUniverse3d) {
+
+        for (String key : hm.keySet()) {
+            List<Node> l1 = nUniverse3d.descendantMatches(Node.class, "Category_" + key);
+            Vector<Iw3dInternetNode> v = hm.get(key);
+            //System.out.println("TRAVERSAL RESULT SIZE:" + v.size() + "; " + l1 );
+            for (Iw3dInternetNode n : v) {
+                Vector3f vStart = Vector3f.ZERO;
+                Vector3f vEnd = Vector3f.ZERO;
+
+                List<Spatial> l2 = nUniverse3d.descendantMatches(Spatial.class, "domainId_" + n.getIwid());
+                int idx = v.indexOf(n);
+                Iw3dInternetNode nPrevious = (idx==-1||idx==0) ? null : v.get(idx-1);
+                if (nPrevious!=null) {
+                    List<Spatial> l3 = nUniverse3d.descendantMatches(Spatial.class, "domainId_" + nPrevious.getIwid());
+                    vStart = l3.get(0).getWorldTranslation();
+                    vEnd = l2.get(0).getWorldTranslation();
+                    //System.out.printf("FOUND PREVIOUS DOMAIN: %s [%s] FOR CURRENT DOMAIN %s [%s]", nPrevious, vStart, n, vEnd );
+                } else {
+                    vStart = l1.get(0).getWorldTranslation();
+                    vEnd = l2.get(0).getWorldTranslation();
+                }
+
+                l1.get(0).attachChild( this.connectWithPreviousNode(assetManager, vStart, vEnd) );
+
+
+            }
+        }
+
+    }
+
     public void addBookmarkImportWebMatrix(AssetManager assetManager, Node nUniverse3d) {
         //this.list = MyDataLoader.getInstance().getDomains(false);
         this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
-        if (!this.list.isEmpty())
+        if (!this.list.isEmpty()) {
             this.addWebMatrix(assetManager, nUniverse3d);
-        else
+            this.traverseSceneForConnection(assetManager, nUniverse3d);
+        } else {
             System.err.println("No data loaded");
+        }
     }
 
     public void addWebMatrix(AssetManager assetManager, Node nUniverse3d) {
 
-        HashMap<String, Vector<Iw3dInternetNode>> hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
+        hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
 
         for (Iw3dInternetNode dom : list) {
             String keyId = String.valueOf(dom.getIwcategoryid());
@@ -221,8 +257,17 @@ public class JmeDomainLibrary {
         }
 
         if (geomDomain != null) {
+            /*
             Material matStar = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
+            */
+            Material matStar = new Material(assetManager,"Common/MatDefs/Light/Lighting.j3md");
+            matStar.setFloat("Shininess", 15f);
+            matStar.setBoolean("UseMaterialColors", true);
+            matStar.setColor("Ambient", ColorRGBA.Yellow.mult(0.2f));
+            matStar.setColor("Diffuse", ColorRGBA.Yellow.mult(0.2f));
+            matStar.setColor("Specular", ColorRGBA.Yellow.mult(0.8f));
+
             geomDomain.setMaterial(matStar);
 
             this.fillWithUserData(geomDomain, node);
@@ -233,11 +278,98 @@ public class JmeDomainLibrary {
         if (!originId.equals("NetOrigin")) {
             Float fY = rand.nextFloat() * 75F;
             domainOrigin.move(new Vector3f(0F, fY, 0F));
+            /*domainOrigin.attachChild( this.connectWithPreviousNode(assetManager, previousNodeVector, new Vector3f(0F, fY, 0F)) );
+            previousNodeVector = new Vector3f(0F, fY, 0F);*/
         } else {
             domainOrigin.move(new Vector3f(0F, 0F, 0F));
         }
 
+
+
         return domainOrigin;
+    }
+
+    private Geometry connectWithOriginNode(AssetManager assetManager, Vector3f vEnd) {
+        Vector3f vStart = new Vector3f(0F, 0F, 0F);
+        Mesh lineMesh = new Mesh();
+        lineMesh.setMode(Mesh.Mode.Lines);
+
+        Vector3f[] lineVerticies=new Vector3f[2];
+        lineVerticies[0]=vStart;
+        lineVerticies[1]=vEnd;
+        /*
+        lineVerticies[0]=new Vector3f(2,0,0);
+        lineVerticies[1]=new Vector3f(-1,0,1);
+        lineVerticies[2]=new Vector3f(0,1,1);
+        lineVerticies[3]=new Vector3f(1,1,1);
+        lineVerticies[4]=new Vector3f(1,4,0);
+        */
+
+        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(lineVerticies));
+
+        short[] indexes=new short[2*lineVerticies.length]; //Indexes are in pairs, from a vertex and to a vertex
+
+        for(short i=0;i<lineVerticies.length-1;i++){
+            indexes[2*i]=i;
+            indexes[2*i+1]=(short)(i+1);
+        }
+
+        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, indexes);
+
+        lineMesh.updateBound();
+        lineMesh.updateCounts();
+
+        /*lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{ 0, 0, 0, 0, 1, 0});
+        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });*/
+//lineMesh.updateBound();
+//lineMesh.updateCounts();
+        Geometry lineGeometry = new Geometry("line", lineMesh);
+        Material lineMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        lineMaterial.setColor("Color", ColorRGBA.Blue);
+        lineGeometry.setMaterial(lineMaterial);
+        return lineGeometry;
+
+    }
+
+    private Geometry connectWithPreviousNode(AssetManager assetManager, Vector3f vStart, Vector3f vEnd) {
+        Mesh lineMesh = new Mesh();
+        lineMesh.setMode(Mesh.Mode.Lines);
+
+        Vector3f[] lineVerticies=new Vector3f[2];
+        lineVerticies[0]=vStart;
+        lineVerticies[1]=vEnd;
+        /*
+        lineVerticies[0]=new Vector3f(2,0,0);
+        lineVerticies[1]=new Vector3f(-1,0,1);
+        lineVerticies[2]=new Vector3f(0,1,1);
+        lineVerticies[3]=new Vector3f(1,1,1);
+        lineVerticies[4]=new Vector3f(1,4,0);
+        */
+
+        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(lineVerticies));
+
+        short[] indexes=new short[2*lineVerticies.length]; //Indexes are in pairs, from a vertex and to a vertex
+
+        for(short i=0;i<lineVerticies.length-1;i++){
+            indexes[2*i]=i;
+            indexes[2*i+1]=(short)(i+1);
+        }
+
+        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, indexes);
+
+        lineMesh.updateBound();
+        lineMesh.updateCounts();
+
+        /*lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{ 0, 0, 0, 0, 1, 0});
+        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });*/
+//lineMesh.updateBound();
+//lineMesh.updateCounts();
+        Geometry lineGeometry = new Geometry("line", lineMesh);
+        Material lineMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        lineMaterial.setColor("Color", ColorRGBA.Blue);
+        lineGeometry.setMaterial(lineMaterial);
+        return lineGeometry;
+
     }
 
     private Node createNodeForCircularMatrix(String originId, Float moveByIncrement, boolean isDummy, AssetManager assetManager, Iw3dInternetNode hygimport, float defaultRadius, int defaultSamples, ColorRGBA defaultColor) {

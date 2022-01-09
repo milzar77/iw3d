@@ -12,14 +12,20 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.light.DirectionalLight;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.debug.WireFrustum;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
+import jme3test.post.BloomUI;
 
 import java.util.concurrent.Callable;
 
@@ -42,6 +48,9 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     public BrowserScreenController niftyScreenBrowser;
 
     public OptionsScreenController niftyScreenOptions;
+
+    private WireFrustum frustum;
+    private FilterPostProcessor fpp;
 
 
     public static void main(String[] args) {
@@ -133,6 +142,57 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             niftyScreenOptions = new OptionsScreenController(this);
 
             stateManager.attach(niftyScreenBrowser);
+/* START-OF: BLOOM */
+
+            viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(74, 134, 232, 0));
+
+            fpp=new FilterPostProcessor(assetManager);
+            fpp.setNumSamples(4);
+
+            /*int numSamples = getContext().getSettings().getSamples();
+            System.out.println("NUM SAMPLES: " + numSamples);
+            if( numSamples > 0 ) {
+                fpp.setNumSamples(numSamples);
+            }*/
+
+            BloomFilter bloom=new BloomFilter();
+            bloom.setDownSamplingFactor(2);
+            bloom.setBlurScale(1.16f);
+            bloom.setExposurePower(0.94f);
+            bloom.setExposureCutOff(0.145f);
+            bloom.setBloomIntensity(-0.929f);
+
+            /*
+            bloom.setBlurScale(1.37f);
+            bloom.setExposurePower(3.30f);
+            bloom.setExposureCutOff(0.2f);
+            bloom.setBloomIntensity(2.45f);
+
+
+blurScale : 1.1400003
+blurScale : 1.1500003
+blurScale : 1.1600003
+exposurePower : 0.9200022
+exposurePower : 0.9300022
+exposurePower : 0.9400022
+exposurePower : 0.9500022
+exposure CutOff : 0.14500014
+exposure CutOff : 0.14600015
+bloom Intensity : -0.9299973
+bloom Intensity : -0.91999733
+             */
+
+            BloomUI ui=new BloomUI(inputManager, bloom);
+
+            viewPort.addProcessor(fpp);
+            fpp.addFilter(bloom);
+
+            DirectionalLight light=new DirectionalLight();
+            light.setDirection(new Vector3f(-1, -1, -1).normalizeLocal());
+            light.setColor(ColorRGBA.White.mult(1.5f));
+            //rootNode.addLight(light);
+
+/* END-OF: BLOOM */
 
         }
 

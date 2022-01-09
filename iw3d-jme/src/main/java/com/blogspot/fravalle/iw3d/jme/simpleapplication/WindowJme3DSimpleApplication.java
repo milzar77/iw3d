@@ -144,7 +144,8 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             stateManager.attach(niftyScreenBrowser);
 /* START-OF: BLOOM */
 
-            viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(74, 134, 232, 0));
+            //viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(74, 134, 232, 0));
+            viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(48, 70, 111, 0));
 
             fpp=new FilterPostProcessor(assetManager);
             fpp.setNumSamples(4);
@@ -160,7 +161,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             bloom.setBlurScale(1.16f);
             bloom.setExposurePower(0.94f);
             bloom.setExposureCutOff(0.145f);
-            bloom.setBloomIntensity(-0.929f);
+            bloom.setBloomIntensity(-0.809f);
 
             /*
             bloom.setBlurScale(1.37f);

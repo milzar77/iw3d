@@ -4,5 +4,5 @@
     <comment>Dynamo DB configuration parameters</comment>
     <entry key="dynamodb.local.internal">false</entry>
     <!-- <entry key="dynamodb.local.server">http://localhost:8000</entry> -->
-    <entry key="dynamodb.local.server">http://192:8000</entry>
+    <entry key="dynamodb.local.server">http://192.168.5.198:8000</entry>
 </properties>

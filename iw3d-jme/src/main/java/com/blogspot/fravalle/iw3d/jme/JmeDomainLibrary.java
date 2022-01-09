@@ -45,14 +45,17 @@ public class JmeDomainLibrary {
 
     public void applySurfingCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.addCircularMatrix(assetManager, nUniverse3d);
+        this.traverseSceneForConnection(assetManager, nUniverse3d);
     }
 
     public void applySurfingHorizontalMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.addHorizontalMatrix(assetManager, nUniverse3d);
+        this.traverseSceneForConnection(assetManager, nUniverse3d);
     }
 
     public void applySurfingRandomWebMatrix(AssetManager assetManager, Node nUniverse3d) {
         this.addWebMatrix(assetManager, nUniverse3d);
+        this.traverseSceneForConnection(assetManager, nUniverse3d);
     }
 
     public void addSurfingCircularMatrix(String sUrl, AssetManager assetManager, Node nUniverse3d) {
@@ -69,18 +72,20 @@ public class JmeDomainLibrary {
             //System.out.println("URLs:\n"+list);
         }*/
 
-        if (!this.list.isEmpty())
+        if (!this.list.isEmpty()) {
             this.addCircularMatrix(assetManager, nUniverse3d);
-        else
+            this.traverseSceneForConnection(assetManager, nUniverse3d);
+        } else
             System.err.println("No data loaded");
     }
 
     public void addBookmarkImportCircularMatrix(AssetManager assetManager, Node nUniverse3d) {
         //this.list = MyDataLoader.getInstance().getDomains(false);
         this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
-        if (!this.list.isEmpty())
+        if (!this.list.isEmpty()) {
             this.addCircularMatrix(assetManager, nUniverse3d);
-        else
+            this.traverseSceneForConnection(assetManager, nUniverse3d);
+        } else
             System.err.println("No data loaded");
     }
 
@@ -135,9 +140,10 @@ public class JmeDomainLibrary {
             google.crawlUrls(true);
             //this.list = MyDataLoader.getInstance().getDomainsFromUrl(sUrl);
             this.list = Iw3dInternetNode.query( "client-"+DataConfiguration.SESSION_ID.toString() );
-            if (!this.list.isEmpty())
+            if (!this.list.isEmpty()) {
                 this.addWebMatrix(assetManager, nUniverse3d);
-            else
+                this.traverseSceneForConnection(assetManager, nUniverse3d);
+            } else
                 System.err.println("No data loaded");
         } /*else {
             WebspiderScannerSqlImport google = new WebspiderScannerSqlImport(sUrl, false);
@@ -175,7 +181,7 @@ public class JmeDomainLibrary {
                     vEnd = l2.get(0).getWorldTranslation();
                     //System.out.printf("FOUND PREVIOUS DOMAIN: %s [%s] FOR CURRENT DOMAIN %s [%s]", nPrevious, vStart, n, vEnd );
                 } else {
-                    vStart = l1.get(0).getWorldTranslation();
+                    vStart = l1.size()>0 ? l1.get(0).getWorldTranslation() : Vector3f.ZERO;
                     vEnd = l2.get(0).getWorldTranslation();
                 }
 

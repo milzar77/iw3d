@@ -1,9 +1,10 @@
 package com.blogspot.fravalle.iw3d.jme.simpleapplication;
 
+import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.ColumnToSearch;
 import com.blogspot.fravalle.data.IMyActionExecutor;
-import com.blogspot.fravalle.iw3d.jme.JmeDomainLibrary;
+import com.blogspot.fravalle.iw3d.jme.sources.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
@@ -24,6 +25,8 @@ import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import jme3test.post.BloomUI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 public class WindowJme3DSimpleApplication extends SimpleApplication implements IMyActionExecutor {
@@ -35,6 +38,11 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
     }*/
 
 
+    public ESourceSelector selectedSource = ESourceSelector.SPIDER;
+
+    private IRenderingSource irs = null;
+
+    private List<Iw3dInternetNode> list = new ArrayList<>();
 
     private Node nUniverse3d = new Node("Universe");
 
@@ -355,6 +363,23 @@ bloom Intensity : -0.91999733
 
     public void applyCircularMatrix(boolean useSurfing) {
 
+        System.out.println("Passato di qui per Circular");
+
+        switch (selectedSource) {
+            case SPIDER:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.CIRCULAR);
+                break;
+            case BOOKMARKS:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.CIRCULAR);
+                break;
+        }
+        //if (!useSurfing) {
+        /*} else {
+            System.err.println("Not Yet Implemented! USING OLD WAY");
+            JmeDomainLibrary.getInstance().applySurfingCircularMatrix(assetManager, nUniverse3d);
+        }*/
+
+/*
         WindowJme3DSimpleApplication.creaSessione();
 
         nUniverse3d.detachAllChildren();
@@ -365,10 +390,22 @@ bloom Intensity : -0.91999733
             //JmeDomainLibrary.getInstance().addSurfingCircularMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
             JmeDomainLibrary.getInstance().applySurfingCircularMatrix(assetManager, nUniverse3d);
         }
+ */
     }
 
     public void applyQuadMatrix(boolean useSurfing) {
 
+        System.out.println("Passato di qui per QUAD");
+
+        switch (selectedSource) {
+            case SPIDER:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.QUAD);
+                break;
+            case BOOKMARKS:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.QUAD);
+                break;
+        }
+        /*
         WindowJme3DSimpleApplication.creaSessione();
 
         nUniverse3d.detachAllChildren();
@@ -379,19 +416,38 @@ bloom Intensity : -0.91999733
             //JmeDomainLibrary.getInstance().addSurfingHorizontalMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d);
             JmeDomainLibrary.getInstance().applySurfingHorizontalMatrix(assetManager, nUniverse3d);
         }
+        */
     }
 
     public void applyWebMatrix() {
 
-        WindowJme3DSimpleApplication.creaSessione();
+        System.out.println("Passato di qui per WEB MATRIX");
 
-        nUniverse3d.detachAllChildren();
-        DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
-        JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
+        switch (selectedSource) {
+            case SPIDER:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.WEB);
+                break;
+            case BOOKMARKS:
+                irs.addMatrix(assetManager, nUniverse3d, list, EViewerType.WEB);
+                break;
+        }
     }
 
-    public void applyRandomWebMatrix(boolean useSurfing) {
+    public void initRandomWebMatrix(boolean useSurfing) {
 
+        System.out.println("Passato di qui per RANDOM WEB MATRIX");
+
+        switch (selectedSource) {
+            case SPIDER:
+                irs = new JmeSpiderSource();
+                this.list = irs.applyMatrix(DataConfiguration.SIMPLE_STRING, assetManager, nUniverse3d, EViewerType.WEB);
+                break;
+            case BOOKMARKS:
+                irs = new JmeBookmarkSource();
+                this.list = irs.applyMatrix(null, assetManager, nUniverse3d, EViewerType.WEB);
+                break;
+        }
+        /*
         WindowJme3DSimpleApplication.creaSessione();
 
         nUniverse3d.detachAllChildren();
@@ -401,23 +457,26 @@ bloom Intensity : -0.91999733
         } else {
             JmeDomainLibrary.getInstance().applySurfingRandomWebMatrix(assetManager, nUniverse3d);
         }
+        */
     }
 
     public void applyMaximumItems(Integer i) {
 
-        WindowJme3DSimpleApplication.creaSessione();
-
-        nUniverse3d.detachAllChildren();
-        DataConfiguration.SESSION_ID = DataConfiguration.STARTING_SESSION_ID;
-        JmeDomainLibrary.getInstance().addBookmarkImportWebMatrix(assetManager, nUniverse3d);
+        System.out.println("BOOKMARK Passato di qui per WEB MATRIX");
+        IRenderingSource irs = null;
+        //if (!useSurfing) {
+        irs = new JmeBookmarkSource();
+        this.list = irs.applyMatrix(null, assetManager, nUniverse3d, EViewerType.WEB);
     }
 
-    public void surf(String sUrl, String spiderDepthLevel) {
+    public void initSurf(String sUrl, String spiderDepthLevel) {
 
-        WindowJme3DSimpleApplication.creaSessione();
+        System.out.println("SURF Passato di qui per WEB MATRIX");
+        IRenderingSource irs = null;
+        //if (!useSurfing) {
+        irs = new JmeSpiderSource();
+        this.list = irs.applyMatrix(sUrl, assetManager, nUniverse3d, EViewerType.WEB);
 
-        nUniverse3d.detachAllChildren();
-        JmeDomainLibrary.getInstance().addSurfingWebMatrix(sUrl, assetManager, nUniverse3d);
     }
 
     /*@Override

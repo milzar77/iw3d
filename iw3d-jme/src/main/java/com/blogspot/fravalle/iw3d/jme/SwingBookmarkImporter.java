@@ -1,9 +1,9 @@
 package com.blogspot.fravalle.iw3d.jme;
 
-import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.*;
 import com.blogspot.fravalle.data.chrome.ChromeBookmarkImporter;
 import com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication;
+import com.blogspot.fravalle.iw3d.jme.sources.ESourceSelector;
 import com.jme3.scene.Spatial;
 
 import javax.swing.*;
@@ -143,7 +143,8 @@ public class SwingBookmarkImporter extends JPanel
                 //appInstance.applyRandomWebMatrix(false);
                 appInstance.enqueue(new Callable<Spatial>(){
                     public Spatial call() throws Exception{
-                        appInstance.applyRandomWebMatrix(false);
+                        appInstance.selectedSource = ESourceSelector.BOOKMARKS;
+                        appInstance.initRandomWebMatrix(false);
                         return null;
                     }
                 });

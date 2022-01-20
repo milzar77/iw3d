@@ -1,11 +1,9 @@
 package com.blogspot.fravalle.iw3d.jme.simpleapplication;
 
-import com.blogspot.fravalle.core.DataConfiguration;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 
@@ -56,7 +54,7 @@ public class OptionsScreenController extends AbstractAppState implements ScreenC
     }
 
     public void surfRandomWebMatrix() {
-        this.application.applyRandomWebMatrix(true);
+        this.application.applyWebMatrix();
     }
 
     //APP STATE

@@ -1,6 +1,7 @@
 package com.blogspot.fravalle.iw3d.jme.simpleapplication;
 
 import com.blogspot.fravalle.core.DataConfiguration;
+import com.blogspot.fravalle.iw3d.jme.sources.ESourceSelector;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
@@ -56,7 +57,8 @@ public class BrowserScreenController extends AbstractAppState implements ScreenC
         System.out.printf("Surfing around domain [%1$s] with spidering level %2$s\n",s1, s2);
         DataConfiguration.SIMPLE_STRING = s1;
         DataConfiguration.SPIDER_DEPTH_LEVEL = s2;
-        this.application.surf(s1,s2);
+        this.application.selectedSource = ESourceSelector.SPIDER;
+        this.application.initSurf(s1,s2);
     }
 
     public void showScreen(String screenId) {
@@ -66,20 +68,19 @@ public class BrowserScreenController extends AbstractAppState implements ScreenC
     public void surfHome(String inputId, String inputSpideringDepthLevel) {
         ((TextField)this.screen.findNiftyControl(inputId, TextField.class)).setText("www.google.com");
         ((TextField)this.screen.findNiftyControl(inputSpideringDepthLevel, TextField.class)).setText("2");
+        this.application.selectedSource = ESourceSelector.SPIDER;
+        this.application.applyWebMatrix();
     }
 
     public void surfBookmarks(String inputId, String inputSpideringDepthLevel) {
         ((TextField)this.screen.findNiftyControl(inputId, TextField.class)).setText("");
         ((TextField)this.screen.findNiftyControl(inputSpideringDepthLevel, TextField.class)).setText("");
-        this.sampleWebMatrix();
+        this.application.selectedSource = ESourceSelector.BOOKMARKS;
+        this.application.applyWebMatrix();
     }
 
     public void proposeUrl(String url) {
         ((TextField)this.screen.findNiftyControl("domain", TextField.class)).setText(url);
-    }
-
-    public void sampleWebMatrix() {
-        this.application.applyWebMatrix();
     }
 
     public void showOptionsScreen() {

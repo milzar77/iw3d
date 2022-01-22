@@ -1,4 +1,4 @@
-package com.blogspot.fravalle.iw3d.jme.sources;
+package com.blogspot.fravalle.iw3d.jme.viewers;
 
 import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.jme3.asset.AssetManager;

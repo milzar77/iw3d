@@ -1,4 +1,4 @@
-package com.blogspot.fravalle.iw3d.jme.sources;
+package com.blogspot.fravalle.iw3d.jme.viewers;
 
 public enum EViewerType {
 

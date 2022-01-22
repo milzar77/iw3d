@@ -1,8 +1,8 @@
 package com.blogspot.fravalle.iw3d.jme.sources;
 
 import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
+import com.blogspot.fravalle.iw3d.jme.viewers.EViewerType;
 import com.jme3.asset.AssetManager;
-import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Node;
 
 import java.util.List;

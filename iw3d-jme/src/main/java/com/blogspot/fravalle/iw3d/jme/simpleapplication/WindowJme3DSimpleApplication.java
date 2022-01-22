@@ -5,6 +5,7 @@ import com.blogspot.fravalle.core.DataConfiguration;
 import com.blogspot.fravalle.data.ColumnToSearch;
 import com.blogspot.fravalle.data.IMyActionExecutor;
 import com.blogspot.fravalle.iw3d.jme.sources.*;
+import com.blogspot.fravalle.iw3d.jme.viewers.EViewerType;
 import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;

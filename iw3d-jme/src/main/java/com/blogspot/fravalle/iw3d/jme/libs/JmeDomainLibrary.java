@@ -1,4 +1,4 @@
-package com.blogspot.fravalle.iw3d.jme;
+package com.blogspot.fravalle.iw3d.jme.libs;
 
 public class JmeDomainLibrary {
 

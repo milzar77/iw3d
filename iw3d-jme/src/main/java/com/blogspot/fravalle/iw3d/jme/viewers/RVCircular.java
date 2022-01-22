@@ -1,4 +1,4 @@
-package com.blogspot.fravalle.iw3d.jme.sources;
+package com.blogspot.fravalle.iw3d.jme.viewers;
 
 import com.blogspot.fravalle.aws.dynamodb.beans.Iw3dInternetNode;
 import com.jme3.asset.AssetManager;
@@ -12,19 +12,22 @@ import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Vector;
 
-public class RVWeb extends ARenderingViewer {
+public class RVCircular extends ARenderingViewer {
 
-    public RVWeb() {}
+    public RVCircular() {}
 
     @Override
-    public void visualizzaDati(AssetManager assetManager, Node nUniverse3d, List<Iw3dInternetNode> list) {
-        this.hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
+    public void visualizzaDati(AssetManager assetManager, Node nUniverse3d, List<Iw3dInternetNode> parList) {
+        List<Iw3dInternetNode> list = parList;
+        hm = new LinkedHashMap<String, Vector<Iw3dInternetNode>>();
 
         for (Iw3dInternetNode dom : list) {
             String keyId = String.valueOf(dom.getIwcategoryid());
-            Vector<Iw3dInternetNode> v = this.hm.get(keyId);
+            Vector<Iw3dInternetNode> v = hm.get(keyId);
             if (v!=null) {
                 v.add(dom);
             } else {
@@ -36,7 +39,7 @@ public class RVWeb extends ARenderingViewer {
 
         int domainOriginIndex = 0;
 
-        nUniverse3d.attachChild(this.createNodeForMatrix("NetOrigin", assetManager, list.get(domainOriginIndex), 0f,false, 0.1f, 16, ColorRGBA.Yellow));
+        nUniverse3d.attachChild(this.createNodeForMatrix("NetOrigin", assetManager, list.get(domainOriginIndex),0F,false, 0.1f, 16, ColorRGBA.Yellow));
 
         list.remove(domainOriginIndex);
 
@@ -50,7 +53,7 @@ public class RVWeb extends ARenderingViewer {
             Float moveByIncrement = 0F;
             Float moveIncrement = 2F;
             for (Iw3dInternetNode dom : v) {
-                n.attachChild(this.createNodeForMatrix("Origin::"+dom.getIwid(), assetManager, dom, 0f, false, 0.1f, 3, ColorRGBA.White));
+                n.attachChild(this.createNodeForMatrix("Origin::"+dom.getIwid(), assetManager, dom, moveByIncrement+=moveIncrement, false, 0.1f, 3, ColorRGBA.White));
             }
             Quaternion pitch = new Quaternion();
             pitch.fromAngleAxis((FastMath.PI * (increment+=incrementDeg)) / 180F, new Vector3f(0,0,1));
@@ -78,18 +81,19 @@ public class RVWeb extends ARenderingViewer {
         }
 
         if (geomDomain != null) {
-            /*
-            Material matStar = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
-            */
-            Material matStar = new Material(assetManager,"Common/MatDefs/Light/Lighting.j3md");
+            Material matStar = new Material(assetManager, /*"Common/MatDefs/Misc/Unshaded.j3md"*/"Common/MatDefs/Light/Lighting.j3md");
+            //matStar.setColor("Color", defaultColor);//TODO: implement color star detector from spectral star data
+
             matStar.setFloat("Shininess", 15f);
             matStar.setBoolean("UseMaterialColors", true);
             matStar.setColor("Ambient", ColorRGBA.Yellow.mult(0.2f));
             matStar.setColor("Diffuse", ColorRGBA.Yellow.mult(0.2f));
             matStar.setColor("Specular", ColorRGBA.Yellow.mult(0.8f));
 
+
             geomDomain.setMaterial(matStar);
+
+            //FIX: this.fillWithUserData(geomDomain, hygimport);
 
             this.fillWithUserData(geomDomain, node);
 
@@ -97,15 +101,10 @@ public class RVWeb extends ARenderingViewer {
         }
 
         if (!originId.equals("NetOrigin")) {
-            Float fY = rand.nextFloat() * 75F;
-            domainOrigin.move(new Vector3f(0F, fY, 0F));
-            /*domainOrigin.attachChild( this.connectWithPreviousNode(assetManager, previousNodeVector, new Vector3f(0F, fY, 0F)) );
-            previousNodeVector = new Vector3f(0F, fY, 0F);*/
+            domainOrigin.move(new Vector3f(0F, moveByIncrement, 0F));
         } else {
             domainOrigin.move(new Vector3f(0F, 0F, 0F));
         }
-
-
 
         return domainOrigin;
     }

@@ -1,6 +1,7 @@
 package com.blogspot.fravalle.iw3d.jme.simpleapplication;
 
 import com.blogspot.fravalle.core.DataConfiguration;
+import com.blogspot.fravalle.iw3d.jme.BrowserIWorld3D;
 import com.blogspot.fravalle.iw3d.jme.sources.ESourceSelector;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -9,6 +10,7 @@ import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import org.apache.camel.ProducerTemplate;
 
 
 public class BrowserScreenController extends AbstractAppState implements ScreenController {

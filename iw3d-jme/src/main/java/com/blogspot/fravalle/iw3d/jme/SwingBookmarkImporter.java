@@ -5,6 +5,7 @@ import com.blogspot.fravalle.data.chrome.ChromeBookmarkImporter;
 import com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication;
 import com.blogspot.fravalle.iw3d.jme.sources.ESourceSelector;
 import com.jme3.scene.Spatial;
+import org.apache.camel.ProducerTemplate;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -45,6 +46,11 @@ public class SwingBookmarkImporter extends JPanel
     };
 
     public class ImportTask extends SwingWorker<Void, Void> {
+
+        public ImportTask(SwingBookmarkImporter instanceSwingBookmarkImporter) {
+            this.addPropertyChangeListener(instanceSwingBookmarkImporter);
+        }
+
         /*
          * Main task. Executed in background thread.
          */
@@ -170,6 +176,9 @@ public class SwingBookmarkImporter extends JPanel
 
         this.appInstance = instance;
 
+        importTask = new ImportTask(this);
+        BrowserIWorld3D.camelContext.getRegistry().bind("bookmarkImporter", ImportTask.class, importTask);
+
         //Create the demo's UI.
         startButton = new JButton("Import Chrome Bookmarks from a file");
         startButton.setActionCommand("importBookmarks");
@@ -232,10 +241,15 @@ public class SwingBookmarkImporter extends JPanel
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         //Instances of javax.swing.SwingWorker are not reusuable, so
         //we create new instances as needed.
-        importTask = new ImportTask();
-        importTask.addPropertyChangeListener(this);
-        importTask.execute();
+        //importTask = new ImportTask(this);
+        //FIX: importTask.execute();
         //startButton.setEnabled(false);
+
+        //TODO:
+        ProducerTemplate template = BrowserIWorld3D.camelContext.createProducerTemplate();
+        template.sendBody("direct:inputCamel","<hello>World!</hello>");
+
+
     }
 
     /**

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+
+        <packageScan>
+            <package>com.blogspot.fravalle.iw3d.routes</package>
+            <excludes>**.*Excluded*</excludes>
+            <includes>**.*</includes>
+        </packageScan>
+
+        <route>
+            <from uri="direct:a"/>
+            <choice>
+                <when>
+                    <xpath>$foo = 'bar'</xpath>
+                    <to uri="direct:b"/>
+                </when>
+                <when>
+                    <xpath>$foo = 'cheese'</xpath>
+                    <to uri="direct:c"/>
+                </when>
+                <otherwise>
+                    <to uri="direct:d"/>
+                </otherwise>
+            </choice>
+        </route>
+    </camelContext>
+
+    <bean id="logger" class="org.apache.camel.component.log.LogComponent"/>
+
+</beans>

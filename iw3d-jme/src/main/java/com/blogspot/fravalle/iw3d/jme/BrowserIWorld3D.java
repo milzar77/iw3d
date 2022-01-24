@@ -2,10 +2,16 @@ package com.blogspot.fravalle.iw3d.jme;
 
 import com.blogspot.fravalle.data.IMyActionExecutor;
 import com.blogspot.fravalle.iw3d.jme.simpleapplication.WindowJme3DSimpleApplication;
+import com.blogspot.fravalle.iw3d.routes.BookmarkRouteBuilder;
 import com.jme3.app.LegacyApplication;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.spring.SpringCamelContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +21,26 @@ import java.util.concurrent.Callable;
 
 public class BrowserIWorld3D {
 
+    public static SpringCamelContext camelContext;
+
     public static void main(String[] args) {
+
+        try {
+            ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+                    "file:src/main/resources/META-INF/spring/iw3d-spring-context.xml");
+
+            camelContext = (SpringCamelContext) applicationContext.getBean("camel");
+            //camelContext.addRoutes(new BookmarkRouteBuilder());
+            camelContext.start();
+            /* pure camel way
+            camelContext = new DefaultCamelContext();
+            camelContext.addRoutes(new BookmarkRouteBuilder());
+            camelContext.start();
+             */
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         createCanvas(appClass);
 
@@ -57,6 +82,7 @@ public class BrowserIWorld3D {
                 startApp();
                 jFrame.setLocationRelativeTo(null);
                 jFrame.setVisible(true);
+
             }
         });
 
@@ -126,6 +152,7 @@ public class BrowserIWorld3D {
         jFrame.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosed(WindowEvent e) {
+                camelContext.stop();
                 app.stop();
                 System.exit(0);
             }

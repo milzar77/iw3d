@@ -79,8 +79,6 @@
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-s3:1.11.907" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-kms:1.11.907" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:jmespath-java:1.11.907" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.13.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.13.3" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-client:9.4.18.v20190429" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.18.v20190429" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.18.v20190429" level="project" />
@@ -120,7 +118,6 @@
     <orderEntry type="library" name="Maven: com.github.nifty-gui:nifty-examples:1.4.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derby:10.8.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.cayenne:cayenne-server:4.1" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.apache.cayenne:cayenne-di:4.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.4.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.0.0" level="project" />
@@ -225,5 +222,9 @@
     <orderEntry type="library" name="Maven: org.apache.camel.springboot:camel-xml-jaxp-starter:3.14.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.camel:camel-xml-jaxp:3.14.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.camel:camel-xml-io-util:3.14.0" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.32" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.17.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.17.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.17.0" level="project" />
   </component>
 </module>

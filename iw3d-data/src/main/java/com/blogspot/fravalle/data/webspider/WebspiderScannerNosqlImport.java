@@ -10,13 +10,16 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedResponse;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Scanner;
 import java.util.Vector;
 
 public class WebspiderScannerNosqlImport {
@@ -220,8 +223,20 @@ public class WebspiderScannerNosqlImport {
     private void downloadUrl() {
         try {
             URL urlDownload = new URL("https://"+ theUrl);
+            URLConnection urlConn = urlDownload.openConnection();
+            //FIX:
+            //java.io.IOException: Server returned HTTP response code: 401 for URL: https://metatronanalytics.com/wp-json/wp/v2/pages/299
+            //java.io.IOException: Server returned HTTP response code: 406 for URL: https://metatronanalytics.com/wp-includes/wlwmanifest.xml
+            //How do I fix error 406 in Java?
+            //You may get a HTTP 406 Not Acceptable error while trying to return Java objects from a REST controller. The server is not able to handle your request because the HTTP header “Accept” does not match with any of the content types it can handle.
+            urlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246");
             FileOutputStream fos = new FileOutputStream(fOut);
-            IOUtils.copy(urlDownload, fos);
+            //IOUtils.copy(urlDownload, fos);//FIX: in case of 403 does not work: java.io.IOException: Server returned HTTP response code: 403 for URL: https://metatronanalytics.com
+            //String out = new Scanner(urlDownload.openStream(), "UTF-8").useDelimiter("\\A").next();
+            String out = new Scanner(urlConn.getInputStream(), "UTF-8").useDelimiter("\\A").next();
+            fos.write(out.getBytes(StandardCharsets.UTF_8));
+            fos.flush();
+            fos.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

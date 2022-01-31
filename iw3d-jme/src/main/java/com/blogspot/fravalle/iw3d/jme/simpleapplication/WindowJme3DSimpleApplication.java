@@ -153,6 +153,7 @@ public class WindowJme3DSimpleApplication extends SimpleApplication implements I
             stateManager.attach(niftyScreenBrowser);
 /* START-OF: BLOOM */
 
+            //FIX: background conflicts with bloom
             //viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(74, 134, 232, 0));
             viewPort.setBackgroundColor(ColorRGBA.fromRGBA255(48, 70, 111, 0));
 
@@ -194,6 +195,7 @@ bloom Intensity : -0.91999733
 
             BloomUI ui=new BloomUI(inputManager, bloom);
 
+            //FIX: bloom conflicts with background
             viewPort.addProcessor(fpp);
             fpp.addFilter(bloom);
 

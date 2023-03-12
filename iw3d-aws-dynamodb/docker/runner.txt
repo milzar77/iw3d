@@ -4,4 +4,6 @@ or from DOS terminal:
 
 sudo chmod 777 ./docker/dynamodb
 
+sudo chmod 666 /var/run/docker.sock
+
 sudo docker-compose up
